@@ -3,7 +3,6 @@ package org.nocturne
 import io.github.cdimascio.dotenv.dotenv
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.nocturne.listeners.OnMessageSentListener
@@ -16,17 +15,6 @@ class App {
         get() {
             return "Hello World!"
         }
-}
-
-class MessageReceiveListener : ListenerAdapter() {
-    override fun onMessageReceived(event: MessageReceivedEvent) {
-        System.out.printf(
-            "[%s] %#s: %s\n",
-            event.channel,
-            event.author,
-            event.message.contentDisplay
-        )
-    }
 }
 
 fun main() {
