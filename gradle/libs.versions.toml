@@ -2,9 +2,14 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-guava = "33.0.0-jre"
-junit-jupiter = "5.10.2"
+guava = "33.3.1-jre"
+junit-jupiter-engine = "5.11.1"
+discord-jda = "5.3.0"
 
 [libraries]
+discord-jda = { module = "net.dv8tion:JDA", version.ref = "discord-jda" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter-engine" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.0.21" }
