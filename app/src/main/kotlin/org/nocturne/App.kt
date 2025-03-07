@@ -2,8 +2,6 @@ package org.nocturne
 
 import io.github.cdimascio.dotenv.dotenv
 import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.nocturne.listeners.OnMessageSentListener
 import org.nocturne.listeners.OnReadyListener
