@@ -5,9 +5,11 @@
 guava = "33.3.1-jre"
 junit-jupiter-engine = "5.11.1"
 discord-jda = "5.3.0"
+dotenv = "3.2.0"
 
 [libraries]
 discord-jda = { module = "net.dv8tion:JDA", version.ref = "discord-jda" }
+dotenv = { module = "io.github.cdimascio:dotenv-java", version.ref = "dotenv" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter-engine" }
 

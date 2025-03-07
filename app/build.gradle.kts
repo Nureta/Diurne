@@ -27,6 +27,7 @@ dependencies {
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+    implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
     implementation(libs.discord.jda)
     implementation(libs.guava)
 }
