@@ -27,9 +27,10 @@ dependencies {
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
+    implementation(libs.dotenv)
     implementation(libs.discord.jda)
     implementation(libs.guava)
+    implementation("ch.qos.logback:logback-classic:1.5.17")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
