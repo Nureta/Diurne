@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
+import org.nocturne.listeners.OnMessageSentListener
 import org.nocturne.listeners.OnReadyListener
 import java.util.*
 
@@ -36,10 +37,6 @@ fun main() {
     }
     val token = dotenv.get("DISCORD_TOKEN")
     JDABuilder.createLight(token, ArrayList<GatewayIntent>())
-        .addEventListeners(OnReadyListener())
+        .addEventListeners(OnReadyListener(), OnMessageSentListener())
         .build()
-}
-
-fun initCommands() {
-
 }
