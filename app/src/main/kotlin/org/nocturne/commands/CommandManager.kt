@@ -25,11 +25,11 @@ object CommandManager
 
     private fun initSimplecommands() {
         val simplePingCommand = MyCommand()
-        simplePingCommand.commandCallback = { event ->
-            event.reply(event.getOption("content")!!.asString).queue() // reply immediately
-        }
         simplePingCommand.commandName = "animal"
-        simplePingCommand.data = Commands.slash("animal", "Finds a random animal")
+        simplePingCommand.commandCallback = { event ->
+            event.reply(event.getOption("type")!!.asString).queue() // reply immediately
+        }
+        simplePingCommand.data = Commands.slash(simplePingCommand.commandName!!, "Finds a random animal")
             .addOptions(
                 OptionData(OptionType.STRING, "type", "The type of animal to find")
                     .addChoice("Bird", "bird")
@@ -53,7 +53,7 @@ object CommandManager
             cmdData.add(cmd.data!!)
         }
         if (cmdData.isEmpty()) return
-        mJda.updateCommands().addCommands(cmdData)
+        mJda.updateCommands().addCommands(cmdData).queue()
     }
 
     class GenericCommandListener : ListenerAdapter() {

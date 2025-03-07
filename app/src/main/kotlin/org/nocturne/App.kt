@@ -22,7 +22,10 @@ fun main() {
         ignoreIfMissing = true
     }
     val token = dotenv.get("DISCORD_TOKEN")
-    JDABuilder.createLight(token, ArrayList<GatewayIntent>())
+    val intents = ArrayList<GatewayIntent>()
+    intents.add(GatewayIntent.GUILD_MESSAGES)
+    intents.add(GatewayIntent.MESSAGE_CONTENT)
+    JDABuilder.createLight(token, intents)
         .addEventListeners(OnReadyListener(), OnMessageSentListener())
         .build()
 }
