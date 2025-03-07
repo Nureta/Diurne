@@ -3,6 +3,7 @@
  */
 package org.example
 
+import org.nocturne.App
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
