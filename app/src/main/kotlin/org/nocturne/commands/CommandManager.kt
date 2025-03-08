@@ -140,7 +140,6 @@ object CommandManager {
                 .setDescription("Provide attachments/proof, reason, and decision to made. \n IF none is provided logical reasoning is permitted/context")
                 .setFooter("Vote for whether or not to invoke this executive decision")
                 .setColor(Color(0x9efffd))
-                .setImage("https://pin.it/3epZihZcl")
                 .build()
             event.guild!!.getTextChannelById("1347819027858194473")!!.sendMessageEmbeds(helperEmbed)
                 .addActionRow(

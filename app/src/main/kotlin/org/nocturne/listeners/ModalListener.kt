@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.messages.MessagePollData
+import java.awt.Color
 import java.time.Duration
 import java.util.*
 import kotlin.time.DurationUnit
@@ -42,11 +43,12 @@ object ModalListener : ListenerAdapter() {
             val reportEmbed = EmbedBuilder()
                 .setTitle("Report made by ${event.member?.user?.name ?: "unknown"}")
                 .setDescription(report)
+                .setColor(Color(0x74D7DFF))
                 .build()
             var data = MessagePollData.builder("Invoke Decision?")
                 .addAnswer("Yes")
                 .addAnswer("No")
-                .setDuration(Duration.ofMinutes(120))
+                .setDuration(Duration.ofMinutes(30))
                 .build()
             val sentReport = event.guild!!.getTextChannelById(1347776201615474688)!!.sendMessageEmbeds(reportEmbed).complete()
             val thread = sentReport.createThreadChannel("report").complete()
