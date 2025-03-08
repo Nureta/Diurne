@@ -1,4 +1,7 @@
-CREATE TABLE GuildData (
+CREATE TABLE guildData (
   guild_id TEXT PRIMARY KEY NOT NULL,
   confession_channel TEXT NOT NULL
 );
+
+selectAll:
+SELECT * FROM guildData;

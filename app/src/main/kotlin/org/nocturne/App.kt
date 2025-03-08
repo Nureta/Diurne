@@ -9,6 +9,7 @@ import org.nocturne.listeners.ModalListener
 import org.nocturne.listeners.OnMessageSentListener
 import org.nocturne.listeners.OnReadyListener
 import java.util.*
+import javax.xml.crypto.Data
 
 
 class App {
@@ -23,6 +24,7 @@ class App {
 fun main() {
     val driver: SqlDriver = JdbcSqliteDriver("jdbc:sqlite:test.db")
     Database.Schema.create(driver)
+
     val dotenv = dotenv {
         directory = "private"
         ignoreIfMalformed = true
