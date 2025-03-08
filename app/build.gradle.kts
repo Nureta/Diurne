@@ -6,15 +6,16 @@
  */
 
 plugins {
+    id("app.cash.sqldelight") version "2.0.2"
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     alias(libs.plugins.kotlin.jvm)
-
     // Apply the application plugin to add support for building a CLI application in Java.
     application
 }
 
 repositories {
     // Use Maven Central for resolving dependencies.
+    google()
     mavenCentral()
 }
 
@@ -31,6 +32,16 @@ dependencies {
     implementation(libs.discord.jda)
     implementation(libs.guava)
     implementation("ch.qos.logback:logback-classic:1.5.17")
+    implementation("app.cash.sqldelight:sqlite-driver:2.0.2")
+    implementation(libs.vader.sentiment)
+}
+
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("org.nocturne")
+        }
+    }
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

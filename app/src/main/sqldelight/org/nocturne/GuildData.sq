@@ -1,0 +1,4 @@
+CREATE TABLE GuildData (
+  guild_id TEXT PRIMARY KEY NOT NULL,
+  confession_channel TEXT NOT NULL
+);

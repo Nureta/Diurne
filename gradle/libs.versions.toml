@@ -6,12 +6,12 @@ discord-jda = "5.3.0"
 dotenv = "6.5.1"
 guava = "33.3.1-jre"
 junit-jupiter-engine = "5.11.1"
-
+vader-sentiment-analyzer = "1.0"
 [libraries]
 discord-jda = { module = "net.dv8tion:JDA", version.ref = "discord-jda" }
 dotenv = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenv" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter-engine" }
-
+vader-sentiment = { module = "com.github.apanimesh061:vader-sentiment-analyzer", version.ref = "vader-sentiment-analyzer" }
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.0.21" }
