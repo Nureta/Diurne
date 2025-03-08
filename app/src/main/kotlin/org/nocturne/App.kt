@@ -3,6 +3,7 @@ package org.nocturne
 import io.github.cdimascio.dotenv.dotenv
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
+import org.nocturne.listeners.ModalListener
 import org.nocturne.listeners.OnMessageSentListener
 import org.nocturne.listeners.OnReadyListener
 import java.util.*
@@ -15,6 +16,8 @@ class App {
         }
 }
 
+
+
 fun main() {
     val dotenv = dotenv {
         directory = "private"
@@ -26,6 +29,8 @@ fun main() {
     intents.add(GatewayIntent.GUILD_MESSAGES)
     intents.add(GatewayIntent.MESSAGE_CONTENT)
     JDABuilder.createLight(token, intents)
-        .addEventListeners(OnReadyListener(), OnMessageSentListener())
+        .addEventListeners(OnReadyListener(), OnMessageSentListener(),ModalListener)
         .build()
 }
+
+

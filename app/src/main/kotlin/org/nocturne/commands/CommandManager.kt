@@ -9,6 +9,11 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.interactions.components.text.TextInput
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+
 import java.util.ArrayList
 import java.util.function.Consumer
 
@@ -20,7 +25,9 @@ object CommandManager {
     lateinit var mJda: JDA
     fun initializeCommands(jda: JDA) {
         if (hasInit) return
+        hasInit = true
         this.mJda = jda
+
         mJda.addEventListener(GenericCommandListener())
         initSimpleCommands()
         registerAllCommandMapCommands()
@@ -33,6 +40,8 @@ object CommandManager {
         updateCommandMap(getAnimalCommand())
         updateCommandMap(getEchoCommand())
         updateCommandMap(getPokemonCommand())
+        updateCommandMap(sendConfession())
+
     }
 
 
@@ -96,12 +105,31 @@ object CommandManager {
         }
     }
 
+    private fun sendConfession(): MyCommand {
+        return MyCommand(
+            "confession",
+            Commands.slash("confession","Send a anonymous confession")
+
+        )
+        {event ->
+            val confessionInput = TextInput.create("confession","confession", TextInputStyle.PARAGRAPH)
+                .setPlaceholder("Confession")
+                .setMaxLength(400)
+                .setMinLength(10)
+                .build()
+            val confessionModal = Modal.create("confession","Confession")
+                .addComponents(ActionRow.of(confessionInput))
+                .build()
+            event.replyModal(confessionModal).queue()
+        }
+    }
+
 
     // endregion
 
 
     private fun updateCommandMap(command: MyCommand): Boolean {
-        commandMap[command.commandName] = command
+        commandMap[command.commandName.lowercase()] = command
         return true
     }
 
@@ -122,7 +150,7 @@ object CommandManager {
      */
     class GenericCommandListener : ListenerAdapter() {
         override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-            var cmd = commandMap[event.name]
+            var cmd = commandMap[event.name.lowercase()]
             if (cmd == null) return
             cmd.commandCallback(event)
         }
