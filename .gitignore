@@ -6,6 +6,8 @@ ai/
 
 .idea/
 .idea
+.vscode/
+.vscode
 
 **/build/
 !src/**/build/
