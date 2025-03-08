@@ -1,5 +1,7 @@
 package org.nocturne
 
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import io.github.cdimascio.dotenv.dotenv
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -19,6 +21,8 @@ class App {
 
 
 fun main() {
+    val driver: SqlDriver = JdbcSqliteDriver("jdbc:sqlite:test.db")
+    Database.Schema.create(driver)
     val dotenv = dotenv {
         directory = "private"
         ignoreIfMalformed = true
