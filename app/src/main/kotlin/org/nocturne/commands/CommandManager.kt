@@ -1,5 +1,6 @@
 package org.nocturne.commands
 
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -13,7 +14,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
-
 import java.util.ArrayList
 import java.util.function.Consumer
 
@@ -122,6 +122,27 @@ object CommandManager {
                 .build()
             event.replyModal(confessionModal).queue()
         }
+    }
+
+    private fun makeHelperTicket(): MyCommand {
+        return MyCommand(
+            "helperticket",
+            Commands.slash("setup","Assign helper ticket to a channel")
+                .addOptions(
+                    OptionData(OptionType.INTEGER, "ID", "Channel ID")
+                )        )
+        {event ->
+            val sender = event.member?.user?.id ?: return@MyCommand
+            if (!adminUsers.contains(sender)) return@MyCommand
+            val helperEmbed = EmbedBuilder()
+                .setTitle("Create a helper report")
+                .setDescription("Provide attachments/proof, reason, and decision to made. \n IF none is provided logical reasoning is permitted/context")
+                .setFooter("Vote for whether or not to evoke this executive decision")
+                .build()
+            event.guild!!.getTextChannelById(event.getOption("ID")!!.asString)!!.sendMessageEmbeds(helperEmbed)
+            event.reply("Message sent to assigned Channel!").setEphemeral(true)
+        }
+
     }
 
 
