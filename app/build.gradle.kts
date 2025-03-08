@@ -9,14 +9,17 @@ plugins {
     id("app.cash.sqldelight") version "2.0.2"
     // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
     alias(libs.plugins.kotlin.jvm)
+    `java-library`
     // Apply the application plugin to add support for building a CLI application in Java.
     application
 }
+configurations { create("externalLibs") }
 
 repositories {
     // Use Maven Central for resolving dependencies.
     google()
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
@@ -27,13 +30,15 @@ dependencies {
     testImplementation(libs.junit.jupiter.engine)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("ch.qos.logback:logback-classic:1.5.17")
 
     implementation(libs.dotenv)
     implementation(libs.discord.jda)
     implementation(libs.guava)
-    implementation("ch.qos.logback:logback-classic:1.5.17")
     implementation("app.cash.sqldelight:sqlite-driver:2.0.2")
-    implementation(libs.vader.sentiment)
+    implementation("edu.stanford.nlp:stanford-corenlp:4.5.8")
+    implementation("edu.stanford.nlp:stanford-corenlp:4.5.8:models")
+
 }
 
 sqldelight {

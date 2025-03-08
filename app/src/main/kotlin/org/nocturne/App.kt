@@ -19,11 +19,12 @@ class App {
         }
 }
 
-
-
 fun main() {
     val driver: SqlDriver = JdbcSqliteDriver("jdbc:sqlite:test.db")
-    Database.Schema.create(driver)
+
+    try {
+        Database.Schema.create(driver)
+    } catch (ignored: Exception) {}
 
     val dotenv = dotenv {
         directory = "private"
