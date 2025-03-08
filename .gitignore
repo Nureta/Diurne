@@ -4,6 +4,9 @@ test.db
 **/test.db
 ai/
 
+.idea/
+.idea
+
 **/build/
 !src/**/build/
 
