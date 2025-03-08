@@ -36,8 +36,6 @@ dependencies {
     implementation(libs.discord.jda)
     implementation(libs.guava)
     implementation("app.cash.sqldelight:sqlite-driver:2.0.2")
-    implementation("edu.stanford.nlp:stanford-corenlp:4.5.8")
-    implementation("edu.stanford.nlp:stanford-corenlp:4.5.8:models")
 
 }
 
