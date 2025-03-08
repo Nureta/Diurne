@@ -41,7 +41,7 @@ dependencies {
 
 sqldelight {
     databases {
-        create("Database") {
+        create("NocturneDB") {
             packageName.set("org.nocturne")
         }
     }

@@ -5,6 +5,7 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import io.github.cdimascio.dotenv.dotenv
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
+import org.nocturne.commands.SetupHelperCommand
 import org.nocturne.listeners.ModalListener
 import org.nocturne.listeners.OnMessageSentListener
 import org.nocturne.listeners.OnReadyListener
@@ -23,7 +24,7 @@ fun main() {
     val driver: SqlDriver = JdbcSqliteDriver("jdbc:sqlite:test.db")
 
     try {
-        Database.Schema.create(driver)
+        NocturneDB.Schema.create(driver)
     } catch (ignored: Exception) {}
 
     val dotenv = dotenv {
@@ -36,7 +37,7 @@ fun main() {
     intents.add(GatewayIntent.GUILD_MESSAGES)
     intents.add(GatewayIntent.MESSAGE_CONTENT)
     JDABuilder.createLight(token, intents)
-        .addEventListeners(OnReadyListener(), OnMessageSentListener(),ModalListener)
+        .addEventListeners(OnReadyListener(), OnMessageSentListener(),ModalListener,SetupHelperCommand())
         .build()
 }
 

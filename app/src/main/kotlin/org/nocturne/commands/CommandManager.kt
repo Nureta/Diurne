@@ -5,20 +5,22 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import java.awt.Color
 import java.util.ArrayList
 import java.util.function.Consumer
+import javax.swing.text.StyleConstants.ColorConstants
 
 object CommandManager {
-    var adminUsers = arrayOf("393982976125435934", "321419785189720064")
+    var adminUsers = arrayOf("393982976125435934", "321419785189720064","1347797953699647488")
 
     private var hasInit = false
     private val commandMap = HashMap<String, MyCommand>()
@@ -41,6 +43,7 @@ object CommandManager {
         updateCommandMap(getEchoCommand())
         updateCommandMap(getPokemonCommand())
         updateCommandMap(sendConfession())
+        updateCommandMap(makeHelperTicket())
 
     }
 
@@ -126,20 +129,24 @@ object CommandManager {
 
     private fun makeHelperTicket(): MyCommand {
         return MyCommand(
-            "helperticket",
-            Commands.slash("setup","Assign helper ticket to a channel")
-                .addOptions(
-                    OptionData(OptionType.INTEGER, "ID", "Channel ID")
-                )        )
+            "setuphelper",
+            Commands.slash("setuphelper","Assign helper ticket to a channel")
+     )
         {event ->
             val sender = event.member?.user?.id ?: return@MyCommand
             if (!adminUsers.contains(sender)) return@MyCommand
             val helperEmbed = EmbedBuilder()
                 .setTitle("Create a helper report")
                 .setDescription("Provide attachments/proof, reason, and decision to made. \n IF none is provided logical reasoning is permitted/context")
-                .setFooter("Vote for whether or not to evoke this executive decision")
+                .setFooter("Vote for whether or not to invoke this executive decision")
+                .setColor(Color(0x9efffd))
+                .setImage("https://pin.it/3epZihZcl")
                 .build()
-            event.guild!!.getTextChannelById(event.getOption("ID")!!.asString)!!.sendMessageEmbeds(helperEmbed)
+            event.guild!!.getTextChannelById("1347819027858194473")!!.sendMessageEmbeds(helperEmbed)
+                .addActionRow(
+                    Button.primary("report","Submit a report!")
+                )
+                .queue()
             event.reply("Message sent to assigned Channel!").setEphemeral(true)
         }
 
