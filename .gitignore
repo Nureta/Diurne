@@ -1,5 +1,9 @@
 .gradle
 .env
+test.db
+**/test.db
+ai/
+
 **/build/
 !src/**/build/
 

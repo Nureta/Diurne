@@ -1,7 +1,5 @@
 package org.nocturne.listeners
 
-import edu.stanford.nlp.pipeline.CoreDocument
-import edu.stanford.nlp.pipeline.StanfordCoreNLP
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
@@ -15,23 +13,14 @@ import java.util.*
 
 
 object ModalListener : ListenerAdapter() {
-    val stanfordPipeline: StanfordCoreNLP
     init {
         val props = Properties()
         props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse, sentiment")
-        stanfordPipeline = StanfordCoreNLP(props)
     }
 
     override fun onModalInteraction(event: ModalInteractionEvent) {
         if (event.modalId == "confession") {
             var confession = event.getValue("confession")?.asString ?: return
-
-            val coreDoc = CoreDocument(confession)
-            stanfordPipeline.annotate(coreDoc)
-
-            for (sent in coreDoc.sentences()) {
-                confession += "\n${sent.sentiment()}"
-            }
 
             var confessionEmbed = EmbedBuilder()
                 .setTitle("Confession")
