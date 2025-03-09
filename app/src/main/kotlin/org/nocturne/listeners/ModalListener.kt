@@ -54,16 +54,14 @@ object ModalListener : ListenerAdapter() {
             val votePoll = MessagePollBuilder("Vote for $reportR")
                 .addAnswer("Yes")
                 .addAnswer("No")
-                .setDuration(1800L, TimeUnit.SECONDS)
+                .setDuration(Duration.ofMinutes(60L))
                 .build()
 
 
             val sentReport = event.guild!!.getTextChannelById(1347776201615474688)!!.sendMessageEmbeds(reportEmbed).complete()
             val thread = sentReport.createThreadChannel(reportD).complete()
             val message = thread.sendMessage("# $reportR  \n### $reportD \n \n *(Provide any Images/Proofs)* \n-# <@&1347387864165384243>").complete()
-            thread.sendMessagePoll(votePoll)
-
-
+            thread.sendMessagePoll(votePoll).queue()
             event.reply("Report has been sent!").setEphemeral(true).queue()
         }
     }
@@ -81,8 +79,6 @@ object ModalListener : ListenerAdapter() {
                     .build()
                 event.replyModal(confessionModal).queue() // send a message in the channel
             }
-
-
         }
     }
 }
