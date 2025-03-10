@@ -5,10 +5,8 @@ import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import io.github.cdimascio.dotenv.dotenv
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
-import org.nocturne.commands.SetupHelperCommand
-import org.nocturne.listeners.ModalListener
 import org.nocturne.listeners.OnMessageSentListener
-import org.nocturne.listeners.OnReadyListener
+import org.nocturne.listeners.GlobalListeners
 import java.util.*
 
 
@@ -36,7 +34,7 @@ fun main() {
     intents.add(GatewayIntent.GUILD_MESSAGES)
     intents.add(GatewayIntent.MESSAGE_CONTENT)
     JDABuilder.createLight(token, intents)
-        .addEventListeners(OnReadyListener(), OnMessageSentListener(),ModalListener,SetupHelperCommand())
+        .addEventListeners(GlobalListeners, OnMessageSentListener())
         .build()
 }
 
