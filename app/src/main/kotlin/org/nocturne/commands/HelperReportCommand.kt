@@ -43,8 +43,8 @@ object HelperReportCommand {
 
     private fun registerToGlobalListeners() {
         GlobalListeners.onSlashCommandInteractionSubscribers[COMMAND_NAME] = ::onSlashCommand
-        GlobalListeners.onButtonInteractionSubscribers[REPORT_BUTTON_ID] = ::onButtonInteraction
-        GlobalListeners.onModalInteractionSubscribers[REPORT_MODAL_ID] = ::onModalInteraction
+        GlobalListeners.onButtonInteractionSubscribers[REPORT_BUTTON_ID] = ::onReportButtonInteraction
+        GlobalListeners.onModalInteractionSubscribers[REPORT_MODAL_ID] = ::onReportModalInteraction
     }
 
     private fun onSlashCommand(event: SlashCommandInteractionEvent) {
@@ -74,7 +74,7 @@ object HelperReportCommand {
     /**
      * If pressing on the "report" button, for creating a ticket, we'll open a modal for the user to submit info.
      */
-    private fun onButtonInteraction(event: ButtonInteractionEvent) {
+    private fun onReportButtonInteraction(event: ButtonInteractionEvent) {
         if (event.componentId.lowercase() != REPORT_BUTTON_ID) return
         val reportInputDecision = TextInput.create(REPORT_MODAL_FIELD_DECISION, "Decision", TextInputStyle.SHORT)
             .setPlaceholder("Report Title/Decisions you want made")
@@ -95,7 +95,7 @@ object HelperReportCommand {
     /**
      * After helper modal has been responded to, we'll create a thread and ping staff members.
      */
-    private fun onModalInteraction(event: ModalInteractionEvent) {
+    private fun onReportModalInteraction(event: ModalInteractionEvent) {
         if (event.modalId.lowercase() != REPORT_MODAL_ID) return
         val reportD = event.getValue(REPORT_MODAL_FIELD_DECISION)?.asString ?: return
         val reportR = event.getValue(REPORT_MODAL_FIELD_REASON)?.asString ?: return
