@@ -43,6 +43,7 @@ object CommandManager {
         ConfessionCreateCommand.init()
         AdminEchoCommand.init()
         HelperReportCommand.init()
+        EightBallCommand.init()
         // updateCommandMap(makeHelperTicket())
     }
 
