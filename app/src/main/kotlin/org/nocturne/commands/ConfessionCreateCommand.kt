@@ -4,14 +4,12 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
-import org.nocturne.commands.CommandManager.adminUsers
 import org.nocturne.listeners.GlobalListeners
 
 object ConfessionCreateCommand {
@@ -35,8 +33,8 @@ object ConfessionCreateCommand {
 
     private fun registerToGlobalListeners() {
         GlobalListeners.onSlashCommandInteractionSubscribers[COMMAND_NAME] = ::onSlashCommand
-        GlobalListeners.onModalInteractionSubscribers[CONFESSION_MODAL_ID] = ::onModalInteraction
-        GlobalListeners.onButtonInteractionSubscribers[CONFESSION_BUTTON_NEW] = ::onButtonNewInteraction
+        GlobalListeners.onModalInteractionSubscribers[CONFESSION_MODAL_ID] = ::onConfessionModalInteraction
+        GlobalListeners.onButtonInteractionSubscribers[CONFESSION_BUTTON_NEW] = ::onNewConfessionButtonInteraction
     }
 
     private fun onSlashCommand(event: SlashCommandInteractionEvent) {
@@ -46,7 +44,7 @@ object ConfessionCreateCommand {
     /**
      * send confession message in appropriate chanel after modal is done being responded to.
      */
-    private fun onModalInteraction(event: ModalInteractionEvent) {
+    private fun onConfessionModalInteraction(event: ModalInteractionEvent) {
         val confession = event.getValue(CONFESSION_MODAL_TEXT_ID)?.asString ?: return
         val confessionEmbed = EmbedBuilder()
             .setTitle("Confession")
@@ -63,7 +61,7 @@ object ConfessionCreateCommand {
     /**
      * When user presses "new confession" show modal
      */
-    private fun onButtonNewInteraction(event: ButtonInteractionEvent) {
+    private fun onNewConfessionButtonInteraction(event: ButtonInteractionEvent) {
         if (event.componentId != CONFESSION_BUTTON_NEW) return
         event.replyModal(getConfessionModal()).queue() // send a message in the channel
     }
