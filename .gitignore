@@ -4,6 +4,10 @@ test.db
 **/test.db
 ai/
 
+# SSL
+*.pem
+*.p12
+
 .idea/
 .idea
 .vscode/
@@ -93,3 +97,4 @@ kotlin-ide/
 .kotlin/
 .teamcity/
 .npmrc
+

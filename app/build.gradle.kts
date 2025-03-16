@@ -31,6 +31,9 @@ dependencies {
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("ch.qos.logback:logback-classic:1.5.17")
+    implementation("org.apache.logging.log4j:log4j-bom:2.24.3")
+    implementation("org.apache.logging.log4j:log4j-api:2.24.3")
+    implementation("org.apache.logging.log4j:log4j-core:2.24.3")
 
     implementation(libs.dotenv)
     implementation(libs.discord.jda)
