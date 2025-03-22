@@ -31,6 +31,7 @@ fun main() {
         NocturneDB.Schema.create(driver)
     } catch (ignored: Exception) {}
 
+
     val dotenv = dotenv {
         directory = "private"
         ignoreIfMalformed = true
@@ -38,6 +39,7 @@ fun main() {
     }
     val token = dotenv.get("DISCORD_TOKEN")
     val keystorePass = dotenv.get("KEYSTORE_PASS")
+    SocketManager.socketAuth = dotenv.get("AUTH_PASS")
     SocketManager.start(keystorePass, 15656)
 
     val intents = ArrayList<GatewayIntent>()

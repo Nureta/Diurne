@@ -12,6 +12,7 @@ import java.net.Socket
 
 object SocketManager {
     val logger = LoggerFactory.getLogger(SocketManager::class.java)
+    var socketAuth = ""
     var serverSocket: SSLServerSocket? = null
     var connectionThread: Thread? = null
 
@@ -41,10 +42,8 @@ object SocketManager {
     }
 
     /**
-     * Get SSLContext from keystore.jks
-     * @param keypass - Password of keystore
+     * Accepts socket connections & pass over to handler thread.
      */
-
     fun socketConnectionHandler() {
         val mySocket: SSLServerSocket? = serverSocket
         if (mySocket == null) {
@@ -57,7 +56,8 @@ object SocketManager {
                 val clientSocket = mySocket.accept()
                 logger.info("Client Connected! - ${clientSocket.inetAddress.hostAddress}")
                 Thread {
-                    socketClientCommunicationHandler(clientSocket)
+                    val clientConn = ClientWorkerConnection(clientSocket)
+                    clientConn.start()
                 }.start()
             } catch (e: Exception) {
                 logger.error("Socket Connection Handler Error: ${e.message}\n${e.stackTraceToString()}")
