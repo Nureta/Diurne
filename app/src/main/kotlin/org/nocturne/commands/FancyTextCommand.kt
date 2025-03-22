@@ -74,9 +74,13 @@ object FancyTextCommand {
             alphabetNumber = x.code - 97
             if (x.isUpperCase()) {
                 alphabetNumber += 32
-                newText = newText.plus(EMOJI_LIST[alphabetNumber])
+                if (alphabetNumber <= EMOJI_LIST.size) {
+                    newText = newText.plus(EMOJI_LIST[alphabetNumber])
+                }
             } else {
-                newText = newText.plus(EMOJI_LIST[alphabetNumber])
+                if (alphabetNumber <= EMOJI_LIST.size) {
+                    newText = newText.plus(EMOJI_LIST[alphabetNumber])
+                }
             }
         }
         val fancyEmbed = EmbedBuilder()
