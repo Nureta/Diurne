@@ -44,6 +44,7 @@ object CommandManager {
         AdminEchoCommand.init()
         HelperReportCommand.init()
         EightBallCommand.init()
+        FancyTextCommand.init()
         // updateCommandMap(makeHelperTicket())
     }
 
