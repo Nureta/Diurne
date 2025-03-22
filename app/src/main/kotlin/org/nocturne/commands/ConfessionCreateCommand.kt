@@ -80,5 +80,4 @@ object ConfessionCreateCommand {
             .build()
         return confessionModal
     }
-
 }

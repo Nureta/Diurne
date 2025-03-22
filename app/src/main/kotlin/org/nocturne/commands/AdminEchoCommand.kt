@@ -35,6 +35,4 @@ object AdminEchoCommand {
             event.reply("Success").setEphemeral(true).queue()
         }
     }
-
-
 }
