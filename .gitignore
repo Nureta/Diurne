@@ -2,7 +2,8 @@
 .env
 test.db
 **/test.db
-ai/
+model/
+hatemodel/
 
 # SSL
 *.pem

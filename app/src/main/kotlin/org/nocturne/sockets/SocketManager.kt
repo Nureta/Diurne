@@ -62,6 +62,8 @@ object SocketManager {
                 }.start()
             } catch (e: Exception) {
                 clientConnection?.isRunning = false
+                clientConnection?.close()
+                clientConnection = null
                 logger.error("Socket Connection Handler Error: ${e.message}\n${e.stackTraceToString()}")
             }
         }

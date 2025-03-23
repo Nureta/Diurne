@@ -1,5 +1,6 @@
 package org.nocturne.sockets
 
+import okhttp3.internal.closeQuietly
 import okio.ByteString.Companion.encodeUtf8
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
@@ -16,22 +17,37 @@ import java.util.concurrent.ConcurrentLinkedQueue
  */
 class ClientWorkerConnection(val socket: Socket) {
     val logger = LoggerFactory.getLogger(ClientWorkerConnection::class.java)
-    val HEARTBEAT_COOLDOWN = 60000L
+    val HEARTBEAT_COOLDOWN = 20000L
     lateinit var writer: PrintWriter    // Autoflush is off, please clean up after yourself =)
     lateinit var reader: BufferedReader
     var isAuthenticated = false
+    @Volatile
     var isRunning = true
 
     val writeLock = Object()
     val cmdQueue = ConcurrentLinkedQueue<Pair<WorkerCommand, CommandResultLock>>()
     var queueWorker: Thread? = null
+    var heartbeatWorker: Thread? = null
 
     fun start() {
         writer = PrintWriter(socket.getOutputStream(), false)
         reader = BufferedReader(InputStreamReader(socket.getInputStream()))
         queueWorker = startQueueHandler()
         requestAuth().waitBlocking(5000)
-        startHeartbeatHandler()
+        heartbeatWorker = startHeartbeatHandler()
+    }
+
+    fun close() {
+        logger.info("Closing Socket...")
+        try {
+            writer.close()
+            reader.close()
+            socket.close()
+        } catch (e: Exception) {
+            logger.info("Exception closing socket ${e.stackTraceToString()}")
+        }
+        queueWorker?.interrupt()
+        heartbeatWorker?.interrupt()
     }
 
     fun requestAuth(): CommandResultLock {
@@ -83,16 +99,6 @@ class ClientWorkerConnection(val socket: Socket) {
             .build())
         val result = getReplyData()
         return result
-        /*
-        val splitNums = result.split(",")
-        if (splitNums.size != 2) {
-        logger.warn("Invalidtoxicity data returned $")
-        return Pair(0.0f, 0.0f)
-        }
-        val neutral = splitNums[0].toFloatOrNull() ?: 0.0f
-        val toxic = splitNums[1].toFloatOrNull() ?: 0.0f
-        return Pair(neutral, toxic)
-          */
     }
 
     /**
@@ -126,13 +132,16 @@ class ClientWorkerConnection(val socket: Socket) {
             while (isRunning) {
                 try {
                     val result = requestEcho("HEARTBEAT").waitBlocking(15000L)
-                    if (result == null) throw IOException("Heartbeat failure.")
-                    logger.info("Socket Heartbeat Success")
-                    Thread.sleep(HEARTBEAT_COOLDOWN)
+                    if (result == null || result != "HEARTBEAT") throw IOException("Heartbeat failure.")
+                    else {
+                        logger.info("Socket Heartbeat Success")
+                        Thread.sleep(HEARTBEAT_COOLDOWN)
+                    }
                 } catch(e: Exception) {
-
                     isRunning = false
                     logger.warn("Heartbeat failed! Shutting down! ${e.stackTraceToString()}")
+                    this.close()
+                    return@Thread
                 }
             }
         }
