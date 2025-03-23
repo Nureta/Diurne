@@ -19,6 +19,8 @@ COMMAND_PREFIX = "@cmd"
 REPLY_PREFIX = "@reply[9271d6]"
 REPLY_SUFFIX = "[493f4a]"
 
+CMD_AUTH = "REQUEST_AUTH"
+CMD_ECHO = "REQUEST_ECHO"
 # Connects to server & auto restarts on Error
 # Loop reads for commands.
 def connect_to_server():
@@ -49,6 +51,7 @@ def connect_to_server():
 
 def read_for_command(socket: ssl.SSLSocket):
     cmd_req = socket.recv(1024).decode()
+    print(f"Received Data: {cmd_req}")
     if (not cmd_req.startswith(COMMAND_PREFIX)):
         raise IOError(f"Command Error {cmd_req}")
     cmd_name = get_cmd_name(cmd_req)
@@ -58,10 +61,15 @@ def read_for_command(socket: ssl.SSLSocket):
 
 def handle_command(socket: ssl.SSLSocket, cmd: str, params: List[str]):
     print(f"Receieved Command: {cmd}")
-    if cmd == "REQUEST_AUTH":
+    if cmd == CMD_AUTH:
         do_reply(socket, auth_pass or "")
+    elif cmd == CMD_ECHO:
+        reply = ""
+        if (len(params) > 0):
+            reply = params[0]
+        do_reply(socket, reply)
     else:
-        do_reply(socket, auth_pass or "")
+        do_reply(socket, "")
 
 def do_reply(socket: ssl.SSLSocket, reply: str):
     reply_str = f"{REPLY_PREFIX}{reply}{REPLY_SUFFIX}\n"
