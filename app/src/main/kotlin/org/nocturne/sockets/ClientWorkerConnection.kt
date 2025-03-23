@@ -43,10 +43,17 @@ class ClientWorkerConnection(val socket: Socket) {
             .addParam(param).build())
     }
 
+    fun requestToxicCheck(param: String): CommandResultLock {
+        return queueCommand(WorkerCommand.Builder(WorkerCommand.CMD_REQUEST_TOXIC_CHECK)
+            .addParam(param).build())
+    }
+
     private fun raw_requestAuth(): Boolean {
+        val requestDataLen = "@reply[123456]".length + SocketManager.socketAuth.length + "[123456]".length + 1
+
         writeCommand(WorkerCommand.Builder(WorkerCommand.CMD_REQUEST_AUTH)
             .build())
-        val result = getReplyData()
+        val result = getReplyDataBounded(requestDataLen)
         if (result != SocketManager.socketAuth) {
             logger.warn("INVALID AUTHENTICATION RECEIVED FROM ${socket.inetAddress}!")
             return false
@@ -68,6 +75,26 @@ class ClientWorkerConnection(val socket: Socket) {
         return result
     }
 
+    fun raw_requestToxic(prompt: String?): String {
+        if (!raw_ensureAuth()) { throw IOException("Socket Unauthorized!")}
+        if (prompt == null) return ""
+        writeCommand(WorkerCommand.Builder(WorkerCommand.CMD_REQUEST_TOXIC_CHECK)
+            .addParam(prompt)
+            .build())
+        val result = getReplyData()
+        return result
+        /*
+        val splitNums = result.split(",")
+        if (splitNums.size != 2) {
+        logger.warn("Invalidtoxicity data returned $")
+        return Pair(0.0f, 0.0f)
+        }
+        val neutral = splitNums[0].toFloatOrNull() ?: 0.0f
+        val toxic = splitNums[1].toFloatOrNull() ?: 0.0f
+        return Pair(neutral, toxic)
+          */
+    }
+
     /**
      * Add command into queue, return lock for sender to wait on.
      */
@@ -82,7 +109,7 @@ class ClientWorkerConnection(val socket: Socket) {
             while (isRunning) {
                 try {
                     Thread.sleep(300)
-                    var (cmd, resultLock) = cmdQueue.poll() ?: continue
+                    val (cmd, resultLock) = cmdQueue.poll() ?: continue
                     val res = handleCommand(cmd)
                     resultLock.__complete(res)
                 } catch (e: Exception) {
@@ -103,8 +130,9 @@ class ClientWorkerConnection(val socket: Socket) {
                     logger.info("Socket Heartbeat Success")
                     Thread.sleep(HEARTBEAT_COOLDOWN)
                 } catch(e: Exception) {
+
                     isRunning = false
-                    logger.warn("Heartbeat failed! Shutting down!")
+                    logger.warn("Heartbeat failed! Shutting down! ${e.stackTraceToString()}")
                 }
             }
         }
@@ -117,6 +145,7 @@ class ClientWorkerConnection(val socket: Socket) {
         when (cmd.cmd) {
             WorkerCommand.CMD_REQUEST_AUTH -> result = raw_requestAuth().toString()
             WorkerCommand.CMD_REQUEST_ECHO -> result = raw_requestEcho(cmd.params.firstOrNull())
+            WorkerCommand.CMD_REQUEST_TOXIC_CHECK -> result = raw_requestToxic(cmd.params.firstOrNull())
             else -> {}
         }
         return result
@@ -136,6 +165,27 @@ class ClientWorkerConnection(val socket: Socket) {
             writer.println(sendData)
             writer.flush()
         }
+    }
+
+    // Use this so we dont read too much data when we shouldn't be!
+    private fun getReplyDataBounded(exactChar: Int): String {
+        val buf = CharArray(exactChar)
+        reader.read(buf, 0, exactChar)
+        var result = String(buf)
+        if (!result.startsWith(WorkerCommand.REPLY_PREFIX)) {
+            logger.warn("Received BAD reply data, discarding all!")
+            clearReadBuffer()
+            return ""
+        }
+        result = result.removePrefix(WorkerCommand.REPLY_PREFIX)
+        result = result.removeSuffix("\n")
+        while (!result.endsWith(WorkerCommand.REPLY_SUFFIX)) {
+            result += reader.readLine()
+        }
+        if (result.endsWith(WorkerCommand.REPLY_SUFFIX)) {
+            result = result.removeSuffix(WorkerCommand.REPLY_SUFFIX)
+        }
+        return result
     }
 
     private fun getReplyData(): String {

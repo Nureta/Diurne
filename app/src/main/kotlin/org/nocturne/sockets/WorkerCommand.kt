@@ -18,6 +18,7 @@ class WorkerCommand(val cmd: String, val params: List<String>) {
 
         val CMD_REQUEST_AUTH = "REQUEST_AUTH"
         val CMD_REQUEST_ECHO = "REQUEST_ECHO"
+        val CMD_REQUEST_TOXIC_CHECK = "REQUEST_TOXIC_CHECK"
     }
     class Builder(val cmd: String) {
         val bParams = ArrayList<String>()
