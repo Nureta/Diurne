@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class CommandResultLock {
     private var result: String = ""
     private var isCompleted = AtomicBoolean(false)
-    var SLEEP_WAIT = 500L
+    var SLEEP_WAIT = 200L
 
     fun __complete(res: String) {
         this.result = res
@@ -18,7 +18,7 @@ class CommandResultLock {
     fun waitBlocking(timeout: Long): String? {
         var waited = 0L
         Thread.sleep(SLEEP_WAIT/5)
-        while (isCompleted.get() == false || waited < timeout) {
+        while (isCompleted.get() == false && waited < timeout) {
             Thread.sleep(SLEEP_WAIT)
             waited += SLEEP_WAIT
         }
@@ -36,7 +36,7 @@ class CommandResultLock {
         Thread {
             var waited = 0L
             Thread.sleep(SLEEP_WAIT/5)
-            while (isCompleted.get() == false || waited < timeout) {
+            while (isCompleted.get() == false && waited < timeout) {
                 Thread.sleep(SLEEP_WAIT)
                 waited += SLEEP_WAIT
             }

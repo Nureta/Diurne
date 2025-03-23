@@ -35,10 +35,6 @@ def connect_to_server():
                 with context.wrap_socket(sock, server_hostname=SERVER_IP) as ssl_sock:
                     while True:
                         try:
-                            # response = input("> ")
-                            # response += "\n"
-                            # ssl_sock.send(response.encode())
-                            # time.sleep(1)
                             print("-- Waiting for command... -- ")
                             read_for_command(ssl_sock)
                         except Exception as e:
@@ -51,7 +47,6 @@ def connect_to_server():
 
 def read_for_command(socket: ssl.SSLSocket):
     cmd_req = socket.recv(1024).decode()
-    print(f"Received Data: {cmd_req}")
     if (not cmd_req.startswith(COMMAND_PREFIX)):
         raise IOError(f"Command Error {cmd_req}")
     cmd_name = get_cmd_name(cmd_req)

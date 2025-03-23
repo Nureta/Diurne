@@ -15,6 +15,7 @@ object SocketManager {
     var socketAuth = ""
     var serverSocket: SSLServerSocket? = null
     var connectionThread: Thread? = null
+    var clientConnection: ClientWorkerConnection? = null
 
     /**
      * Start SSL Socket Server, start thread to handle SSL Communication
@@ -56,10 +57,11 @@ object SocketManager {
                 val clientSocket = mySocket.accept()
                 logger.info("Client Connected! - ${clientSocket.inetAddress.hostAddress}")
                 Thread {
-                    val clientConn = ClientWorkerConnection(clientSocket)
-                    clientConn.start()
+                    clientConnection = ClientWorkerConnection(clientSocket)
+                    clientConnection!!.start()
                 }.start()
             } catch (e: Exception) {
+                clientConnection?.isRunning = false
                 logger.error("Socket Connection Handler Error: ${e.message}\n${e.stackTraceToString()}")
             }
         }
@@ -68,7 +70,6 @@ object SocketManager {
 
     fun socketClientCommunicationHandler(clientSocket: Socket) {
         try {
-
             val writer = PrintWriter(clientSocket.getOutputStream(), true)
             val reader = BufferedReader(InputStreamReader(clientSocket.getInputStream()))
             while (true) {

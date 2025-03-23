@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
  */
 class ClientWorkerConnection(val socket: Socket) {
     val logger = LoggerFactory.getLogger(ClientWorkerConnection::class.java)
+    val HEARTBEAT_COOLDOWN = 60000L
     lateinit var writer: PrintWriter    // Autoflush is off, please clean up after yourself =)
     lateinit var reader: BufferedReader
     var isAuthenticated = false
@@ -30,10 +31,7 @@ class ClientWorkerConnection(val socket: Socket) {
         reader = BufferedReader(InputStreamReader(socket.getInputStream()))
         queueWorker = startQueueHandler()
         requestAuth().waitBlocking(5000)
-        requestEcho("Starting Server!").waitCallback(5000) { result ->
-            if (result == null) { logger.warn("Socket Echo Failed") }
-            else logger.info("Socket Echo: $result")
-        }
+        startHeartbeatHandler()
     }
 
     fun requestAuth(): CommandResultLock {
@@ -44,7 +42,6 @@ class ClientWorkerConnection(val socket: Socket) {
         return queueCommand(WorkerCommand.Builder(WorkerCommand.CMD_REQUEST_ECHO)
             .addParam(param).build())
     }
-
 
     private fun raw_requestAuth(): Boolean {
         writeCommand(WorkerCommand.Builder(WorkerCommand.CMD_REQUEST_AUTH)
@@ -84,13 +81,30 @@ class ClientWorkerConnection(val socket: Socket) {
         val t = Thread {
             while (isRunning) {
                 try {
-                    Thread.sleep(1000)
+                    Thread.sleep(300)
                     var (cmd, resultLock) = cmdQueue.poll() ?: continue
                     val res = handleCommand(cmd)
                     resultLock.__complete(res)
                 } catch (e: Exception) {
                     logger.error("Error running command")
                     logger.error(e.stackTraceToString())
+                }
+            }
+        }
+        t.start()
+        return t
+    }
+    private fun startHeartbeatHandler(): Thread {
+        val t = Thread {
+            while (isRunning) {
+                try {
+                    val result = requestEcho("HEARTBEAT").waitBlocking(15000L)
+                    if (result == null) throw IOException("Heartbeat failure.")
+                    logger.info("Socket Heartbeat Success")
+                    Thread.sleep(HEARTBEAT_COOLDOWN)
+                } catch(e: Exception) {
+                    isRunning = false
+                    logger.warn("Heartbeat failed! Shutting down!")
                 }
             }
         }
