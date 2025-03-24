@@ -2,7 +2,12 @@
 .env
 test.db
 **/test.db
-ai/
+model/
+hatemodel/
+
+# SSL
+*.pem
+*.p12
 
 .idea/
 .idea
@@ -93,3 +98,4 @@ kotlin-ide/
 .kotlin/
 .teamcity/
 .npmrc
+

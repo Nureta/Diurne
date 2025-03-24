@@ -45,6 +45,7 @@ object CommandManager {
         HelperReportCommand.init()
         EightBallCommand.init()
         FancyTextCommand.init()
+        SocketTestCommand.init()
         // updateCommandMap(makeHelperTicket())
     }
 

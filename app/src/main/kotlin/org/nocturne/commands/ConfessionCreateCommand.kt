@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import org.nocturne.listeners.GlobalListeners
+import org.nocturne.sockets.SocketManager
 
 object ConfessionCreateCommand {
     val COMMAND_NAME = "confession"
@@ -45,7 +46,17 @@ object ConfessionCreateCommand {
      * send confession message in appropriate chanel after modal is done being responded to.
      */
     private fun onConfessionModalInteraction(event: ModalInteractionEvent) {
-        val confession = event.getValue(CONFESSION_MODAL_TEXT_ID)?.asString ?: return
+        var confession = event.getValue(CONFESSION_MODAL_TEXT_ID)?.asString ?: return
+
+
+
+        event.reply("Confession processed!").setEphemeral(true).queue()
+
+        // Try getting a toxicity reading
+        val toxic = checkToxicity(confession)
+        if (toxic != null && toxic.isNotEmpty()) {
+            confession += "\n${toxic}"
+        }
         val confessionEmbed = EmbedBuilder()
             .setTitle("Confession")
             .setDescription(confession)
@@ -56,6 +67,20 @@ object ConfessionCreateCommand {
                 Button.primary(CONFESSION_BUTTON_NEW, "Submit a new confession!")
             ).queue()
         event.reply("Confession has been sent!").setEphemeral(true).queue()
+    }
+
+    private fun checkToxicity(confession: String): String? {
+        val conn = SocketManager.clientConnection ?: return null
+
+        var toxicity = conn.requestToxicCheck(confession).waitBlocking(5000)
+        if (toxicity.isNullOrEmpty()) return null
+        val splitToxic = toxicity.split(",")
+        if (splitToxic.size != 2) return null
+        var neutral = splitToxic[0].toFloatOrNull() ?: return null
+        var toxic = splitToxic[1].toFloatOrNull() ?: return null
+        neutral = Math.round(neutral * 100.0f) / 100.0f
+        toxic = Math.round(toxic * 100.0f) / 100.0f
+        return "Toxicity: $toxic"
     }
 
     /**
