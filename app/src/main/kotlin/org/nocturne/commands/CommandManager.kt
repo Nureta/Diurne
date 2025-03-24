@@ -46,6 +46,7 @@ object CommandManager {
         EightBallCommand.init()
         FancyTextCommand.init()
         SocketTestCommand.init()
+        ChatReviveCommand.init()
         // updateCommandMap(makeHelperTicket())
     }
 
