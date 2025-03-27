@@ -160,8 +160,6 @@ class ClientWorkerConnection(val socket: Socket) {
         return result
     }
 
-
-
     /**
      * @see WorkerCommand
      * Will write a normal command with params
