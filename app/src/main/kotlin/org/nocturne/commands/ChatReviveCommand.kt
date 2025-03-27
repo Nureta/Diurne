@@ -37,8 +37,7 @@ object ChatReviveCommand {
     private fun onSlashCommand(event: SlashCommandInteractionEvent) {
         val currentTime = System.currentTimeMillis()
         if ( PING_COOLDOWN < (currentTime - lastUsed) ) {
-
-            event.reply("HEY! <@&$CHAT_REVIVE_ROLE> Someone wants to talk! <:AngelBunny:1352820070560038994>").setEphemeral(false).queue { msg ->
+            event.reply("HEY! <@&$CHAT_REVIVE_ROLE> Someone wants to talk! <a:AngelBunny:1352820070560038994>").setEphemeral(false).queue { msg ->
                 lastUsed = currentTime
                 event.reply("Success").setEphemeral(true).queue()
             }

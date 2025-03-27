@@ -50,7 +50,7 @@ object ConfessionCreateCommand {
 
 
 
-        event.reply("Confession processed!").setEphemeral(true).queue()
+        // event.reply("Confession processed!").setEphemeral(true).queue()
 
         // Try getting a toxicity reading
         val toxic = checkToxicity(confession)

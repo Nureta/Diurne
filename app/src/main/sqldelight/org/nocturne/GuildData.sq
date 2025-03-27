@@ -5,3 +5,4 @@ CREATE TABLE guildData (
 
 selectAll:
 SELECT * FROM guildData;
+
