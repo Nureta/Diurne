@@ -36,7 +36,6 @@ object CheckRankCommand {
             .setTitle("${event.user.name} Rank: `${sortedUsers.indexOf(user)+1}`")
             .setDescription("## Lvl. ${user.current_level}\n-# ${user.experience}/${LevelingManager.nextLevelReq((user.current_level+1))}")
             .build()
-
         event.replyEmbeds(userRankEmbed).queue()
     }
 }

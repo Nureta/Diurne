@@ -3,7 +3,8 @@ CREATE TABLE UserProfile (
      current_level INTEGER NOT NULL,
      experience REAL NOT NULL,
      multiplier REAL NOT NULL,
-     cooldown INTEGER NOT NULL
+     cooldown INTEGER NOT NULL,
+     lunaris INTEGER NOT NULL
 );
 
 selectAll:
@@ -31,6 +32,9 @@ UPDATE UserProfile SET current_level = ? WHERE user_id = ?;
 updateMultiplier:
 UPDATE UserProfile SET multiplier = ? WHERE user_id = ?;
 
+updateLunaris:
+UPDATE UserProfile SET lunaris = ? WHERE user_id = ?;
+
 insertUser:
-INSERT INTO UserProfile (user_id,current_level,experience,cooldown,multiplier)
-VALUES (?,?,?,?,?);
+INSERT INTO UserProfile (user_id,current_level,experience,cooldown,multiplier,lunaris)
+VALUES (?,?,?,?,?,?);

@@ -82,7 +82,7 @@ object HelperReportCommand {
             .setMinLength(5)
             .build()
         val reportInputReason = TextInput.create(REPORT_MODAL_FIELD_REASON, "Reason", TextInputStyle.PARAGRAPH)
-            .setPlaceholder("Reason with evidence if avaliable")
+            .setPlaceholder("Reason with evidence if available")
             .setMaxLength(200)
             .setMinLength(30)
             .build()

@@ -1,13 +1,12 @@
 package org.nocturne
 
-import app.cash.sqldelight.db.SqlDriver
-import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import io.github.cdimascio.dotenv.dotenv
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
 import org.nocturne.database.DataBaseManager
 import org.nocturne.listeners.OnMessageSentListener
 import org.nocturne.listeners.GlobalListeners
+import org.nocturne.services.LevelingService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -32,12 +31,16 @@ class App {
         }
         val token = dotenv.get("DISCORD_TOKEN")
         val keystorePass = dotenv.get("KEYSTORE_PASS")
-        //  SocketManager.socketAuth = dotenv.get("AUTH_PASS")
+        //  SocketManager.socketAuth = dotenv.get("AUTH_PASS")/
         //  SocketManager.start(keystorePass, 15656)
 
         val intents = ArrayList<GatewayIntent>()
         intents.add(GatewayIntent.GUILD_MESSAGES)
         intents.add(GatewayIntent.MESSAGE_CONTENT)
+        intents.add(GatewayIntent.GUILD_MESSAGE_REACTIONS)
+        intents.add(GatewayIntent.GUILD_MEMBERS)
+        intents.add(GatewayIntent.GUILD_VOICE_STATES)
+
         JDABuilder.createLight(token, intents)
             .addEventListeners(GlobalListeners, OnMessageSentListener())
             .build()

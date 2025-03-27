@@ -1,14 +1,19 @@
 package org.nocturne.listeners
 
+import net.dv8tion.jda.api.events.guild.GuildReadyEvent
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.nocturne.commands.CommandManager
+import org.nocturne.services.LevelingService
 
 object GlobalListeners : ListenerAdapter() {
+
     val onReadySubscribers = HashMap<String, ((ReadyEvent) -> Unit)>()
     override fun onReady(event: ReadyEvent) {
         super.onReady(event)
@@ -18,6 +23,16 @@ object GlobalListeners : ListenerAdapter() {
         CommandManager.initializeCommands(event.jda)
     }
 
+    val onGuildReadyEventSubscribers = HashMap<String, ((GuildReadyEvent) -> Unit)>()
+    override fun onGuildReady(event: GuildReadyEvent) {
+        super.onGuildReady(event)
+        for (subscriberCallback in onGuildReadyEventSubscribers.values) {
+            subscriberCallback(event)
+        }
+        CommandManager.initializeCommands(event.jda)
+    }
+
+
     val onMessageReceivedSubscribers = HashMap<String, ((MessageReceivedEvent) -> Unit)>()
     override fun onMessageReceived(event: MessageReceivedEvent) {
         super.onMessageReceived(event)
@@ -25,6 +40,16 @@ object GlobalListeners : ListenerAdapter() {
             subscriberCb(event)
         }
     }
+
+    val onMessageReactionAddSubscribers = HashMap<String, ((MessageReactionAddEvent) -> Unit)>()
+    override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
+        super.onMessageReactionAdd(event)
+        for (subscriberCb in onMessageReactionAddSubscribers.values) {
+            subscriberCb(event)
+        }
+    }
+
+
 
     val onModalInteractionSubscribers = HashMap<String, ((ModalInteractionEvent) -> Unit)>()
     override fun onModalInteraction(event: ModalInteractionEvent) {
@@ -46,6 +71,9 @@ object GlobalListeners : ListenerAdapter() {
         val cb = onSlashCommandInteractionSubscribers[event.name.lowercase()]
         cb?.invoke(event)
     }
-
+    init{
+        OnMessageReactedListener.init()
+        LevelingService.init()
+    }
 }
 
