@@ -25,6 +25,12 @@ UPDATE UserProfile SET cooldown = ? WHERE user_id = ?;
 updateExperience:
 UPDATE UserProfile SET experience = ? WHERE user_id = ?;
 
+updateLevel:
+UPDATE UserProfile SET current_level = ? WHERE user_id = ?;
+
+updateMultiplier:
+UPDATE UserProfile SET multiplier = ? WHERE user_id = ?;
+
 insertUser:
 INSERT INTO UserProfile (user_id,current_level,experience,cooldown,multiplier)
 VALUES (?,?,?,?,?);

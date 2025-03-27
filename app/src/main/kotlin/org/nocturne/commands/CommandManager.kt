@@ -48,6 +48,8 @@ object CommandManager {
         SocketTestCommand.init()
         ChatReviveCommand.init()
         LeaderboardCommand.init()
+        EditUserProfileCommand.init()
+        CheckRankCommand.init()
         // updateCommandMap(makeHelperTicket())
     }
 

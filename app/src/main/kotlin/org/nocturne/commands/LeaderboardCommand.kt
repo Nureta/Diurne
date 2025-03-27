@@ -8,16 +8,15 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 import org.nocturne.UserProfile
 import org.nocturne.UserProfileQueries
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import org.nocturne.commands.ConfessionCreateCommand.CONFESSION_BUTTON_NEW
 
-import org.nocturne.database.DataBaseManager
+import org.nocturne.database.DataBaseManager.USER_PROFILE
 import org.nocturne.listeners.GlobalListeners
+import org.nocturne.logic.leveling.LevelingManager
 import java.awt.Color
 
 
 object LeaderboardCommand {
     val COMMAND_NAME = "leaderboard"
-    val USER_PROFILE = UserProfileQueries(DataBaseManager.driver)
     val CHECK_USER_RANK_BOTTON = "check_rank_user_button"
     private var hasInit = false
 
@@ -45,10 +44,25 @@ object LeaderboardCommand {
         for (i in 0..< numUsers) {
             val indexedUser = sortedUsers[i]
             when(i) {
-                0 -> leaderboardField += "# ${i+1}: <@${indexedUser.user_id}>: ${indexedUser.experience} \n"
-                1 -> leaderboardField += "## ${i+1}: <@${indexedUser.user_id}>: ${indexedUser.experience} \n"
-                2 -> leaderboardField += "### ${i+1}: <@${indexedUser.user_id}>: ${indexedUser.experience} \n"
-                else -> leaderboardField += "${i+1}: <@${indexedUser.user_id}>: ${indexedUser.experience} \n"
+                0 -> leaderboardField += "# Rank `${i+1}`: <@${indexedUser.user_id}> Lvl. ${indexedUser.current_level}\n-# (${indexedUser.experience}/${
+                    LevelingManager.nextLevelReq(
+                        indexedUser.current_level+1)
+                })\n"
+                1 -> leaderboardField += "## Rank `${i+1}`: <@${indexedUser.user_id}> Lvl. ${indexedUser.current_level} \n-# (${indexedUser.experience}/${
+                    LevelingManager.nextLevelReq(
+                        indexedUser.current_level + 1
+                    )
+                })\n"
+                2 -> leaderboardField += "### Rank `${i+1}`: <@${indexedUser.user_id}> Lvl. ${indexedUser.current_level} \n-# (${indexedUser.experience}/${
+                    LevelingManager.nextLevelReq(
+                        indexedUser.current_level + 1
+                    )
+                })\n"
+                else -> leaderboardField += "Rank `${i+1}`: <@${indexedUser.user_id}> Lvl. ${indexedUser.current_level}  \n-# (${indexedUser.experience}/${
+                    LevelingManager.nextLevelReq(
+                        indexedUser.current_level + 1
+                    )
+                })\n"
             }
         }
 
@@ -56,7 +70,6 @@ object LeaderboardCommand {
             .setTitle("${event.guild?.name}")
             .setDescription(leaderboardField)
             .setColor(Color(102, 171, 212))
-
             .build()
 
         event.replyEmbeds(leaderboardEmbed).setEphemeral(false).setActionRow(
@@ -68,13 +81,14 @@ object LeaderboardCommand {
     private fun onCheckRankButtonOnInteraction(event: ButtonInteractionEvent) {
         if (event.componentId != CHECK_USER_RANK_BOTTON) return
         val sortedUsers = USER_PROFILE.selectUserSortedByLevelDesc().executeAsList()
+        val userID = event.user.idLong
+        val user = USER_PROFILE.selectUserByUserId(userID).executeAsOneOrNull()?: return
         val userRankEmbed = EmbedBuilder()
-            .setColor(Color.BLUE)
-            .setTitle("${event.user.name} RANK")
-            .setDescription("${sortedUsers.indexOf(USER_PROFILE.selectUserByUserId(event.user.idLong).executeAsOne())+1}: ${USER_PROFILE.selectUserByUserId(event.user.idLong).executeAsOne().experience}")
+            .setColor(Color(115, 138, 255))
+            .setTitle("${event.user.name} Rank: `${sortedUsers.indexOf(user)+1}`")
+            .setDescription("## Lvl. ${user.current_level}\n-# ${user.experience}/${LevelingManager.nextLevelReq((user.current_level+1))}")
             .build()
         event.replyEmbeds(userRankEmbed).setEphemeral(false).queue()
     }
 }
 
-//${sortedUsers.indexOf(USER_PROFILE.selectUserById(event.user.idLong).executeAsOne())}: ${USER_PROFILE.selectUserById(event.user.idLong).executeAsOne().experience}
