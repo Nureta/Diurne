@@ -17,7 +17,6 @@ class OnMessageSentListener : ListenerAdapter() {
 
     val logger = LoggerFactory.getLogger(OnMessageSentListener::class.java)
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        val guild_id  = event.guild.idLong
         val user_id = event.author.idLong
         val user = USER_PROFILES.selectUserByUserId(user_id).executeAsOneOrNull()
         val currentTime = System.currentTimeMillis()
@@ -27,12 +26,11 @@ class OnMessageSentListener : ListenerAdapter() {
 
         //Inserts unique user if no discord user id is present in the table
         if (user == null) {
-            USER_PROFILES.insertUser(user_id, guild_id, 1, 0.0, 0, 1.0)
-            //todo check for unique guild_id
+            USER_PROFILES.insertUser(user_id, 1, 0.0, 0, 1.0)
             return
         }
 
-        logger.debug("USER: ${user.user_id}\nGUILD: ${user.guild_id}\nLEVEL: ${user.current_level}\nEXP: ${user.experience}\nCOOLDOWN: ${(currentTime-(user.cooldown)).toDuration(DurationUnit.MILLISECONDS).inWholeSeconds}\nMULTIPLIER: ${user.multiplier}\n")
+        logger.debug("USER: ${user.user_id}\nLEVEL: ${user.current_level}\nEXP: ${user.experience}\nCOOLDOWN: ${(currentTime-(user.cooldown)).toDuration(DurationUnit.MILLISECONDS).inWholeSeconds}\nMULTIPLIER: ${user.multiplier}\n")
         if ((currentTime - user.cooldown) < EXP_COOLDOWN) return
         USER_PROFILES.updateCooldown(currentTime,user.user_id)
         USER_PROFILES.updateExperience(user.experience + (50* user.multiplier),user.user_id)
