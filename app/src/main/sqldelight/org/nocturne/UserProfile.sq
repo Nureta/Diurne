@@ -10,12 +10,15 @@ CREATE TABLE UserProfile (
 selectAll:
 SELECT * FROM UserProfile;
 
-selectUserById:
+selectUserByUserId:
 SELECT * FROM UserProfile
 WHERE user_id = ?;
 
+
+
 selectUserSortedByLevelDesc:
-SELECT * FROM UserProfile ORDER BY experience DESC;
+SELECT * FROM UserProfile ORDER BY
+experience DESC;
 
 updateCooldown:
 UPDATE UserProfile SET cooldown = ? WHERE user_id = ?;
