@@ -55,7 +55,7 @@ object LeaderboardCommand {
         val leaderboardEmbed = EmbedBuilder()
             .setTitle("${event.guild?.name}")
             .setDescription(leaderboardField)
-            .setColor(Color.BLACK)
+            .setColor(Color(102, 171, 212))
 
             .build()
 
@@ -71,7 +71,7 @@ object LeaderboardCommand {
         val userRankEmbed = EmbedBuilder()
             .setColor(Color.BLUE)
             .setTitle("${event.user.name} RANK")
-            .setDescription("${sortedUsers.indexOf(USER_PROFILE.selectUserById(event.user.idLong).executeAsOne())+1}: ${USER_PROFILE.selectUserById(event.user.idLong).executeAsOne().experience}")
+            .setDescription("${sortedUsers.indexOf(USER_PROFILE.selectUserByUserId(event.user.idLong).executeAsOne())+1}: ${USER_PROFILE.selectUserByUserId(event.user.idLong).executeAsOne().experience}")
             .build()
         event.replyEmbeds(userRankEmbed).setEphemeral(false).queue()
     }

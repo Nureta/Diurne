@@ -19,7 +19,7 @@ class OnMessageSentListener : ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
         val guild_id  = event.guild.idLong
         val user_id = event.author.idLong
-        val user = USER_PROFILES.selectUserById(user_id).executeAsOneOrNull()
+        val user = USER_PROFILES.selectUserByUserId(user_id).executeAsOneOrNull()
         val currentTime = System.currentTimeMillis()
 
         if (event.author.isBot) return
@@ -32,7 +32,7 @@ class OnMessageSentListener : ListenerAdapter() {
             return
         }
 
-        println("USER: ${user.user_id}\nGUILD: ${user.guild_id}\nLEVEL: ${user.current_level}\nEXP: ${user.experience}\nCOOLDOWN: ${(currentTime-(user.cooldown)).toDuration(DurationUnit.MILLISECONDS).inWholeSeconds}\nMULTIPLIER: ${user.multiplier}\n")
+        logger.debug("USER: ${user.user_id}\nGUILD: ${user.guild_id}\nLEVEL: ${user.current_level}\nEXP: ${user.experience}\nCOOLDOWN: ${(currentTime-(user.cooldown)).toDuration(DurationUnit.MILLISECONDS).inWholeSeconds}\nMULTIPLIER: ${user.multiplier}\n")
         if ((currentTime - user.cooldown) < EXP_COOLDOWN) return
         USER_PROFILES.updateCooldown(currentTime,user.user_id)
         USER_PROFILES.updateExperience(user.experience + (50* user.multiplier),user.user_id)
