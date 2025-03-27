@@ -1,0 +1,31 @@
+CREATE TABLE UserProfile (
+     user_id INTEGER PRIMARY KEY NOT NULL,
+     guild_id INTEGER NOT NULL,
+     current_level INTEGER NOT NULL,
+     experience REAL NOT NULL,
+     multiplier REAL NOT NULL,
+     cooldown INTEGER NOT NULL
+);
+
+selectAll:
+SELECT * FROM UserProfile;
+
+selectUserByUserId:
+SELECT * FROM UserProfile
+WHERE user_id = ?;
+
+
+
+selectUserSortedByLevelDesc:
+SELECT * FROM UserProfile ORDER BY
+experience DESC;
+
+updateCooldown:
+UPDATE UserProfile SET cooldown = ? WHERE user_id = ?;
+
+updateExperience:
+UPDATE UserProfile SET experience = ? WHERE user_id = ?;
+
+insertUser:
+INSERT INTO UserProfile (user_id,guild_id,current_level,experience,cooldown,multiplier)
+VALUES (?,?,?,?,?,?);
