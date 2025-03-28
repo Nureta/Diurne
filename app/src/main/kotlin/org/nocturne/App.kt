@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import org.nocturne.listeners.GlobalListeners
 import org.nocturne.listeners.OnMessageSentListener
 import org.nocturne.sockets.SocketManager
+import org.nocturne.webserver.WebServer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -40,8 +41,15 @@ fun main() {
     val token = dotenv.get("DISCORD_TOKEN")
     val keystorePass = dotenv.get("KEYSTORE_PASS")
     SocketManager.socketAuth = dotenv.get("AUTH_PASS")
+    WebServer.setAuth(keystorePass)
+    WebServer.start()
     SocketManager.start(keystorePass, 15656)
 
+
+    while (true) {
+        App.logger.info("Sleepin")
+        Thread.sleep(5000)
+    }
     val intents = ArrayList<GatewayIntent>()
     intents.add(GatewayIntent.GUILD_MESSAGES)
     intents.add(GatewayIntent.MESSAGE_CONTENT)

@@ -4,11 +4,17 @@ import okhttp3.internal.closeQuietly
 import okio.ByteString.Companion.encodeUtf8
 import org.slf4j.LoggerFactory
 import java.io.BufferedReader
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.Socket
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.nio.file.Files
+import java.nio.file.Paths
+import javax.imageio.ImageIO
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * TODO - Add a command queue to send/execute commands.
@@ -80,6 +86,47 @@ class ClientWorkerConnection(val socket: Socket) {
         }
     }
 
+    fun requestQuoteGen(quote: String, author: String): CommandResultLock {
+        return queueCommand(
+            WorkerCommand.Builder(
+                WorkerCommand.CMD_REQUEST_QUOTE_GEN)
+                .addParam(quote).addParam(author).build())
+    }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    private fun raw_requestQuoteGen(quote: String, author: String): String {
+       if (!raw_ensureAuth()) { throw IOException("Socket Unauthorized!") }
+        writeCommand(
+            WorkerCommand.Builder(WorkerCommand.CMD_REQUEST_QUOTE_GEN)
+                .addParam(quote).addParam(author).build()
+        )
+        val result = getReplyData()
+        var openTag = -1
+        var closeTag = -1
+        if (result == "FAILURE") {
+            return "FAILURE"
+        }
+        for (i in 0..result.length) {
+            if (result[i] != '!') continue
+            if (openTag == -1) {
+                openTag = i
+            } else {
+                closeTag = i;
+                break
+            }
+        }
+        val paramStr = result.substring(openTag + 1, closeTag)
+        val params = paramStr.split(",")
+        var b64Str = result.substring(closeTag+3).dropLast(1)
+        val dataBytes = Base64.decode(b64Str)
+        Files.createDirectories(Paths.get("./cache"))
+        val filepath = "./cache/${params[0]}"
+        val file = FileOutputStream(filepath)
+        file.write(dataBytes)
+        file.close()
+        return filepath
+    }
+
     fun raw_requestEcho(echoData: String?): String {
         if (!raw_ensureAuth()) { throw IOException("Socket Unauthorized!") }
         if (echoData == null) return ""
@@ -121,6 +168,7 @@ class ClientWorkerConnection(val socket: Socket) {
                 } catch (e: Exception) {
                     logger.error("Error running command")
                     logger.error(e.stackTraceToString())
+                    clearReadBuffer()
                 }
             }
         }
@@ -155,6 +203,7 @@ class ClientWorkerConnection(val socket: Socket) {
             WorkerCommand.CMD_REQUEST_AUTH -> result = raw_requestAuth().toString()
             WorkerCommand.CMD_REQUEST_ECHO -> result = raw_requestEcho(cmd.params.firstOrNull())
             WorkerCommand.CMD_REQUEST_TOXIC_CHECK -> result = raw_requestToxic(cmd.params.firstOrNull())
+            WorkerCommand.CMD_REQUEST_QUOTE_GEN -> result = raw_requestQuoteGen(cmd.params[0], cmd.params[1])
             else -> {}
         }
         return result

@@ -1,6 +1,7 @@
+import base64
 import ssl
 from typing import List
-
+import Util
 import ModelManager
 
 COMMAND_PREFIX = "@cmd"
@@ -10,6 +11,7 @@ REPLY_SUFFIX = "[493f4a]"
 CMD_AUTH = "REQUEST_AUTH"
 CMD_ECHO = "REQUEST_ECHO"
 CMD_TOXIC = "REQUEST_TOXIC_CHECK"
+CMD_QUOTE_GEN = "REQUEST_QUOTE_GEN"
 
 class CommandManager():
     __auth_pass = ""
@@ -55,6 +57,8 @@ class CommandManager():
             self.do_reply(socket, reply)
         elif cmd == CMD_TOXIC:
             self.__handle_cmd_toxic(socket, params)
+        elif cmd == CMD_QUOTE_GEN:
+            self.__handle_cmd_quotegen(socket, params)
         else:
             self.do_reply(socket, "")
 
@@ -65,3 +69,15 @@ class CommandManager():
         prompt = str(params[0])
         neutral, toxic = ModelManager.check_toxic(prompt)
         self.do_reply(socket, f"{neutral},{toxic}")
+
+    def __handle_cmd_quotegen(self, socket:ssl.SSLSocket, params: List[str]):
+        if len(params) != 2:
+            self.do_reply(socket, "FAILURE")
+            return
+        quote = str(params[0])
+        author = str(params[1])
+        result_path = ModelManager.createQuoteImg(quote, author)
+        filename = result_path.split("/")[-1]
+        bytes = base64.standard_b64encode(Util.load_img_bytes(result_path))
+        result = f"!{filename},{len(bytes)}!{bytes}"
+        self.do_reply(socket, result)

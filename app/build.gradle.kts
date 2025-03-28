@@ -38,6 +38,8 @@ dependencies {
     implementation(libs.dotenv)
     implementation(libs.discord.jda)
     implementation(libs.guava)
+    implementation(libs.ktor)
+    implementation(libs.ktor.network)
     implementation("app.cash.sqldelight:sqlite-driver:2.0.2")
 
 }
