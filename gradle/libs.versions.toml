@@ -12,7 +12,8 @@ discord-jda = { module = "net.dv8tion:JDA", version.ref = "discord-jda" }
 dotenv = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenv" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit-jupiter-engine" }
-ktor = { module = "io.ktor:ktor-server-netty", version.ref = "ktor"}
+ktor-server = { module = "io.ktor:ktor-server-netty", version.ref = "ktor"}
 ktor-network = { module = "io.ktor:ktor-network-tls-certificates", version.ref = "ktor"}
+ktor-socket = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version = "2.0.21" }

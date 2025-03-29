@@ -8,6 +8,7 @@ import org.nocturne.commands.CommandManager.adminUsers
 import org.nocturne.listeners.GlobalListeners
 import org.nocturne.sockets.ClientWorkerConnection
 import org.nocturne.sockets.SocketManager
+import org.nocturne.webserver.ComputeJobManager
 import org.slf4j.LoggerFactory
 
 object SocketTestCommand {
@@ -35,23 +36,17 @@ object SocketTestCommand {
         val sender = event.member?.user?.id ?: return
         if (!adminUsers.contains(sender)) return
         val echoOpt = event.getOption("msg") ?: return
-        val conn = SocketManager.clientConnection
-        if (conn == null) {
-            event.reply("No connection").setEphemeral(true).queue()
-            return
-        }
         event.deferReply().queue()
         var ping = System.currentTimeMillis()
-        val result = conn.requestEcho(echoOpt.asString).waitBlocking(5000)
+        val result = ComputeJobManager.requestEcho(echoOpt.asString).waitBlocking(5000)
+        // val result = conn.requestEcho(echoOpt.asString).waitBlocking(5000)
         ping = System.currentTimeMillis() - ping
         if (result == null) {
-            event.reply("Client failed to reply").setEphemeral(true).queue()
+            event.hook.sendMessage("Client failed to reply").setEphemeral(true).queue()
             return
         }
         val pingMsg = "Ping: $ping\nResult: $result"
         event.hook.sendMessage(pingMsg).setEphemeral(true).queue()
         logger.info("${event.member?.user?.name ?: "Unknown User"}: ${pingMsg}\n")
     }
-
-
 }

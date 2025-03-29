@@ -8,6 +8,9 @@ hatemodel/
 # SSL
 *.pem
 *.p12
+*.jks
+**.jks
+app/cache/**
 
 .idea/
 .idea

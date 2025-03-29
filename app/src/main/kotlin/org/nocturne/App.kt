@@ -43,13 +43,6 @@ fun main() {
     SocketManager.socketAuth = dotenv.get("AUTH_PASS")
     WebServer.setAuth(keystorePass)
     WebServer.start()
-    SocketManager.start(keystorePass, 15656)
-
-
-    while (true) {
-        App.logger.info("Sleepin")
-        Thread.sleep(5000)
-    }
     val intents = ArrayList<GatewayIntent>()
     intents.add(GatewayIntent.GUILD_MESSAGES)
     intents.add(GatewayIntent.MESSAGE_CONTENT)

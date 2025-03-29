@@ -1,18 +1,37 @@
 package org.nocturne.webserver
 
+import kotlinx.serialization.json.*
 import org.nocturne.sockets.CommandResultLock
+import java.util.UUID
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class ComputeJob(val command: String, val params: List<String>) {
-    @OptIn(ExperimentalUuidApi::class)
-    var id: Uuid = Uuid.random()
-    var timeout: Long = 30000L
+    companion object {
+        val CMD_REQUEST_AUTH = "REQUEST_AUTH"
+        val CMD_REQUEST_ECHO = "REQUEST_ECHO"
+        val CMD_REQUEST_TOXIC_CHECK = "REQUEST_TOXIC_CHECK"
+        val CMD_REQUEST_QUOTE_GEN = "REQUEST_QUOTE_GEN"
+        val TIMEOUT = 100_000L
+    }
+
+    var id: UUID = UUID.randomUUID()
+    var expirationTime = 0L
     var resultLock = CommandResultLock()
 
+    fun toJson(): JsonObject {
+        val json = buildJsonObject {
+            put("id", id.toString())
+            put("command", command)
+            putJsonArray("params") {
+                for (p in params) add(p)
+            }
+        }
+        return json
+    }
+
     class Builder(var computeCommand: String) {
-        var bParams = ArrayList<String>()
-        var timeout = 30000L
+        private var bParams = ArrayList<String>()
+        private var timeout = TIMEOUT
 
         fun addParam(param: String): Builder {
             bParams.add(param)
@@ -31,7 +50,7 @@ class ComputeJob(val command: String, val params: List<String>) {
 
         fun build(): ComputeJob {
             val compute = ComputeJob(computeCommand, bParams)
-            compute.timeout = this.timeout
+            compute.expirationTime = System.currentTimeMillis() + this.timeout
             return compute
         }
     }
