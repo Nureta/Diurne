@@ -7,6 +7,7 @@ import okhttp3.internal.wait
 import org.nocturne.commands.CommandManager.adminUsers
 import org.nocturne.listeners.GlobalListeners
 import org.nocturne.webserver.ComputeJobManager
+import org.nocturne.webserver.WebServer
 import org.slf4j.LoggerFactory
 
 object SocketTestCommand {
@@ -34,10 +35,13 @@ object SocketTestCommand {
         val sender = event.member?.user?.id ?: return
         if (!adminUsers.contains(sender)) return
         val echoOpt = event.getOption("msg") ?: return
+        if (!WebServer.hasSocketConnection()) {
+            event.reply("No Socket Connection").setEphemeral(true).queue()
+            return
+        }
         event.deferReply().queue()
         var ping = System.currentTimeMillis()
         val result = ComputeJobManager.requestEcho(echoOpt.asString).waitBlocking(5000)
-        // val result = conn.requestEcho(echoOpt.asString).waitBlocking(5000)
         ping = System.currentTimeMillis() - ping
         if (result == null) {
             event.hook.sendMessage("Client failed to reply").setEphemeral(true).queue()

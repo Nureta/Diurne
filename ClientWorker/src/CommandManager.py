@@ -87,3 +87,7 @@ class CommandManager():
         filename = result_path.split("/")[-1]
         img_base = base64.b64encode(Util.load_img_bytes(result_path))
         return filename, img_base
+
+    def do_toxic_check(self, msg: str) -> Tuple[str, str]:
+        neutral, toxic = ModelManager.check_toxic(msg)
+        return str(round(neutral, 2)), str(round(toxic, 2))

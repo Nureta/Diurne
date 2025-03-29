@@ -67,12 +67,22 @@ async def commandHandler(id: str, cmd: str, params: List[str]):
     elif cmd == "REQUEST_QUOTE_GEN":
         t = threading.Thread(target=post_quote_gen, args=(id, params[0], params[1]))
         t.start()
+    elif cmd == "REQUEST_TOXIC_CHECK":
+        t = threading.Thread(target=post_toxic_check, args=(id, params[0]))
+        t.start()
+
 
 def post_quote_gen(id: str, quote: str, author: str):
     filename, result = commandManager.do_quotegen(quote, author)
     result = result.decode("ASCII")
     filename = urllib.parse.quote_plus(filename)
     requests.post(f"{SERVER_URL}/result/quote?id={id}&filename={filename}", data=result)
+
+def post_toxic_check(id: str, msg: str):
+    neutral, toxic = commandManager.do_toxic_check(msg)
+    requests.post(f"{SERVER_URL}/result/toxic?id={id}",
+                  {"neutral": neutral, "toxic": toxic})
+
 
 def getGenericJsonResult(id: str, result: str):
     jsonData = { "id": id, "result": result }

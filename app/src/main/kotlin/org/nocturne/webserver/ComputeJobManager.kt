@@ -4,27 +4,35 @@ import io.ktor.util.collections.*
 import java.util.*
 
 object ComputeJobManager {
-    val commandQueue = Collections.synchronizedMap(LinkedHashMap<UUID, ComputeJob>())
-    val pendingCommandMap = ConcurrentMap<UUID, ComputeJob>()
-    val cmdLock = Object()
-    val pendLock = Object()
+    private val commandQueue = Collections.synchronizedMap(LinkedHashMap<UUID, ComputeJob>())
+    private val pendingCommandMap = ConcurrentMap<UUID, ComputeJob>()
+    private val cmdLock = Object()
+    private val pendLock = Object()
+
+    fun addComputeJob(job: ComputeJob): CommandResultLock {
+        synchronized(cmdLock) {
+            commandQueue[job.id] = job
+        }
+        WebServer.notifyRandomSocket()
+        return job.resultLock
+    }
 
     fun requestEcho(echo: String): CommandResultLock {
         val job = ComputeJob.Builder(ComputeJob.CMD_REQUEST_ECHO)
             .addParam(echo).build()
-        synchronized(cmdLock) {
-            commandQueue[job.id] = job
-        }
-        return job.resultLock
+        return addComputeJob(job)
+    }
+
+    fun requestToxicCheck(msg: String): CommandResultLock {
+        val job = ComputeJob.Builder(ComputeJob.CMD_REQUEST_TOXIC_CHECK)
+            .addParam(msg).build()
+        return addComputeJob(job)
     }
 
     fun generateQuoteAI(quote: String, author: String): CommandResultLock {
         val job = ComputeJob.Builder(ComputeJob.CMD_REQUEST_QUOTE_GEN)
             .addParam(quote).addParam(author).build()
-        synchronized(cmdLock) {
-            commandQueue[job.id] = job
-        }
-        return job.resultLock
+        return addComputeJob(job)
     }
 
     /**
@@ -57,6 +65,12 @@ object ComputeJobManager {
     fun genericMapResult(id: UUID, result: Map<String, String>) {
         val pendingCmd = removePendingJob(id) ?: return
         pendingCmd.resultLock.__complete(result)
+    }
+
+    fun numberOfJobs(): Int {
+        synchronized(cmdLock) {
+            return commandQueue.size
+        }
     }
 
     private fun removePendingJob(id: UUID): ComputeJob? {
