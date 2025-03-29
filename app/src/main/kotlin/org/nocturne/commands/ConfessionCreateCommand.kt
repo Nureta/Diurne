@@ -49,7 +49,9 @@ object ConfessionCreateCommand {
     private fun onConfessionModalInteraction(event: ModalInteractionEvent) {
         var confession = event.getValue(CONFESSION_MODAL_TEXT_ID)?.asString ?: return
 
-        event.reply("Confession processed!").setEphemeral(true).queue()
+
+
+        // event.reply("Confession processed!").setEphemeral(true).queue()
 
         // Try getting a toxicity reading
         val toxic = checkToxicity(confession)

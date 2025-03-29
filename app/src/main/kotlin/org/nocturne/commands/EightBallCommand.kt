@@ -1,9 +1,7 @@
 package org.nocturne.commands
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
-import org.nocturne.commands.CommandManager.adminUsers
 import org.nocturne.listeners.GlobalListeners
 import kotlin.random.Random
 

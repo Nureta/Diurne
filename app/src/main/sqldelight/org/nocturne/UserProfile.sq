@@ -1,0 +1,40 @@
+CREATE TABLE UserProfile (
+     user_id INTEGER PRIMARY KEY NOT NULL,
+     current_level INTEGER NOT NULL,
+     experience INTEGER NOT NULL,
+     multiplier REAL NOT NULL,
+     cooldown INTEGER NOT NULL,
+     lunaris INTEGER NOT NULL
+);
+
+-- TODO Need to add migrations to integrate other levelings for specific attributes
+
+selectAll:
+SELECT * FROM UserProfile;
+
+selectUserByUserId:
+SELECT * FROM UserProfile
+WHERE user_id = ?;
+
+selectUserSortedByLevelDesc:
+SELECT * FROM UserProfile ORDER BY
+experience DESC;
+
+updateCooldown:
+UPDATE UserProfile SET cooldown = ? WHERE user_id = ?;
+
+updateExperience:
+UPDATE UserProfile SET experience = ? WHERE user_id = ?;
+
+updateLevel:
+UPDATE UserProfile SET current_level = ? WHERE user_id = ?;
+
+updateMultiplier:
+UPDATE UserProfile SET multiplier = ? WHERE user_id = ?;
+
+updateLunaris:
+UPDATE UserProfile SET lunaris = ? WHERE user_id = ?;
+
+insertUser:
+INSERT INTO UserProfile (user_id,current_level,experience,cooldown,multiplier,lunaris)
+VALUES (?,?,?,?,?,?);
