@@ -1,9 +1,7 @@
 package org.nocturne.webserver
 
 import kotlinx.serialization.json.*
-import org.nocturne.sockets.CommandResultLock
 import java.util.UUID
-import kotlin.uuid.ExperimentalUuidApi
 
 class ComputeJob(val command: String, val params: List<String>) {
     companion object {

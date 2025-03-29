@@ -1,6 +1,6 @@
 import base64
 import ssl
-from typing import List
+from typing import List, Tuple
 import Util
 import ModelManager
 
@@ -81,3 +81,9 @@ class CommandManager():
         bytes = base64.standard_b64encode(Util.load_img_bytes(result_path))
         result = f"!{filename},{len(bytes)}!{bytes}"
         self.do_reply(socket, result)
+
+    def do_quotegen(self, quote: str, author: str) -> Tuple[str,bytes]:
+        result_path = ModelManager.createQuoteImg(quote, author)
+        filename = result_path.split("/")[-1]
+        img_base = base64.b64encode(Util.load_img_bytes(result_path))
+        return filename, img_base

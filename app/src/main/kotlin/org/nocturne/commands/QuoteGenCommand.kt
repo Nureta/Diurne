@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.utils.FileUpload
 import org.nocturne.commands.CommandManager.adminUsers
 import org.nocturne.listeners.GlobalListeners
-import org.nocturne.sockets.SocketManager
+import org.nocturne.webserver.ComputeJobManager
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -39,24 +39,23 @@ object QuoteGenCommand {
         if (!adminUsers.contains(sender)) return
         val quoteMsg = event.getOption("quote")?.asString ?: return
         val author = event.getOption("user")?.asUser?.name ?: return
-        val conn = SocketManager.clientConnection
+        /* val conn = SocketManager.clientConnection
         if (conn == null) {
             event.reply("No connection").setEphemeral(true).queue()
             return
-        }
+        }*/
         event.deferReply(true).queue()
         var ping = System.currentTimeMillis()
-        val result = conn.requestQuoteGen(quoteMsg, author).waitBlocking(30000)
+        val result = ComputeJobManager.generateQuoteAI(quoteMsg, author).waitBlocking(30000)
         ping = System.currentTimeMillis() - ping
         if (result == null) {
             event.hook.sendMessage("Client failed to reply").setEphemeral(true).queue()
             return
         }
-        val pingMsg = "Ping: $ping\nResult: $result"
+        val pingMsg = "Ping: $ping\nResult: ${result["filename"]}"
         event.hook.sendMessage(pingMsg).setEphemeral(true).queue()
 
-        if (result == "FAILURE") return
-        val file = File(result)
+        val file = File(result["filepath"]!!)
         if (file.exists()) {
             val embed = EmbedBuilder()
             embed.setImage("attachment://quote.png")

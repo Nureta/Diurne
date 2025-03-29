@@ -1,4 +1,4 @@
-def load_img_bytes(img_path: str) -> str:
+def load_img_bytes(img_path: str) -> bytes:
     """Reads a file and returns its content as bytes."""
     try:
         file_content_bytes = ""

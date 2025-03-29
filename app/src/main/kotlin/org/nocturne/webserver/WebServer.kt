@@ -7,21 +7,28 @@ import io.ktor.server.routing.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.engine.*
+import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.delay
+import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.decodeFromStream
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.util.*
+import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.UUID
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 val logger = LoggerFactory.getLogger(WebServer::class.java)
 
+@OptIn(ExperimentalEncodingApi::class)
 fun Application.module() {
     install(WebSockets) {
         pingPeriod = 5.seconds
@@ -42,7 +49,23 @@ fun Application.module() {
             val genericCmdData = call.receiveText()
             val genericResult = Json.decodeFromString<GenericStringResult>(genericCmdData)
             ComputeJobManager.genericStringResult(UUID.fromString(genericResult.id), genericResult.result)
+            call.respond(HttpStatusCode.OK)
         }
+
+        post("/result/quote") {
+            val params = call.queryParameters
+            val id = params.get("id")
+            val filename = params.get("filename")
+            if (filename == null) {
+                call.respond(HttpStatusCode.BadRequest, "Specify Query Param")
+                return@post
+            }
+            val data = Base64.decode(call.receiveText())
+            val resultPath = WebServer.saveCacheFile(filename, data)
+            val result = hashMapOf("filename" to filename, "filepath" to resultPath)
+            ComputeJobManager.genericMapResult(UUID.fromString(id), result)
+        }
+
         webSocket("/tasksocket") {
             WebServer.handleTaskSocket(this)
         }
@@ -108,6 +131,14 @@ object WebServer {
         }
     }
 
+    fun saveCacheFile(filename: String, data: ByteArray): String {
+        Files.createDirectories(Paths.get("./cache"))
+        val filepath = "./cache/${filename}"
+        val fos = FileOutputStream(filepath)
+        fos.write(data)
+        fos.close()
+        return filepath
+    }
 
 }
 

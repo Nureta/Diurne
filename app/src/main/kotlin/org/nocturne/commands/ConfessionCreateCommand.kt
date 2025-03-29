@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import org.nocturne.listeners.GlobalListeners
-import org.nocturne.sockets.SocketManager
 
 object ConfessionCreateCommand {
     val COMMAND_NAME = "confession"
@@ -53,7 +52,7 @@ object ConfessionCreateCommand {
         event.reply("Confession processed!").setEphemeral(true).queue()
 
         // Try getting a toxicity reading
-        val toxic = checkToxicity(confession)
+        val toxic: String? = null // checkToxicity(confession)
         if (toxic != null && toxic.isNotEmpty()) {
             confession += "\n${toxic}"
         }
@@ -69,6 +68,7 @@ object ConfessionCreateCommand {
         event.reply("Confession has been sent!").setEphemeral(true).queue()
     }
 
+    /*
     private fun checkToxicity(confession: String): String? {
         val conn = SocketManager.clientConnection ?: return null
 
@@ -81,7 +81,7 @@ object ConfessionCreateCommand {
         neutral = Math.round(neutral * 100.0f) / 100.0f
         toxic = Math.round(toxic * 100.0f) / 100.0f
         return "Toxicity: $toxic"
-    }
+    }*/
 
     /**
      * When user presses "new confession" show modal

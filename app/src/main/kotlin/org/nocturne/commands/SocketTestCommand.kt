@@ -6,8 +6,6 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 import okhttp3.internal.wait
 import org.nocturne.commands.CommandManager.adminUsers
 import org.nocturne.listeners.GlobalListeners
-import org.nocturne.sockets.ClientWorkerConnection
-import org.nocturne.sockets.SocketManager
 import org.nocturne.webserver.ComputeJobManager
 import org.slf4j.LoggerFactory
 
@@ -45,7 +43,7 @@ object SocketTestCommand {
             event.hook.sendMessage("Client failed to reply").setEphemeral(true).queue()
             return
         }
-        val pingMsg = "Ping: $ping\nResult: $result"
+        val pingMsg = "Ping: $ping\nResult: ${result["result"]}"
         event.hook.sendMessage(pingMsg).setEphemeral(true).queue()
         logger.info("${event.member?.user?.name ?: "Unknown User"}: ${pingMsg}\n")
     }
