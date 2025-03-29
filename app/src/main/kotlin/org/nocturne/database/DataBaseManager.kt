@@ -16,10 +16,10 @@ object DataBaseManager {
         try {
             USER_DRIVER = JdbcSqliteDriver("jdbc:sqlite:user.db")
             GUILD_DRIVER = JdbcSqliteDriver("jdbc:sqlite:guild.db")
-            USER_PROFILE = UserProfileQueries(USER_DRIVER)
-            REACT_MILESTONE = ReactMilestoneQueries(GUILD_DRIVER)
             NocturneDB.Schema.create(DataBaseManager.GUILD_DRIVER)
             NocturneDB.Schema.create(DataBaseManager.USER_DRIVER)
+            USER_PROFILE = UserProfileQueries(USER_DRIVER)
+            REACT_MILESTONE = ReactMilestoneQueries(GUILD_DRIVER)
             } catch (ignored: Exception) {
         }
 
