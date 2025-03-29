@@ -1,0 +1,11 @@
+CREATE TABLE ReactMilestone (
+    message_id INTEGER PRIMARY KEY NOT NULL
+);
+
+
+selectMessageByMessageId:
+SELECT * FROM ReactMilestone
+WHERE message_id = ?;
+
+insertMessage:
+INSERT INTO ReactMilestone (message_id) VALUES (?);
