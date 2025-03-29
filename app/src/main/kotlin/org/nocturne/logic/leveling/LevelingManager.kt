@@ -1,6 +1,7 @@
 package org.nocturne.logic.leveling
 
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.GuildVoiceState
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
@@ -12,12 +13,9 @@ import kotlin.math.exp
 import kotlin.math.log
 
 object LevelingManager {
-    val LEVEL_CONSTANT = 100
-    val LEVEL_COEFFICENT = 50
-    val LEVEL_OFFSET = 50
+    val LEVEL_CONSTANT = 300
+    val LEVEL_COEFFICENT = 125
     val NITRO_BONUS = 1.5
-
-    val logger = LoggerFactory.getLogger(OnMessageSentListener::class.java)
 
 
     fun checkLevel(userID: Long): Boolean {
@@ -27,10 +25,19 @@ object LevelingManager {
         if (selectedUserEXP < nextLevelReq) return false
         return true
     }
+    private fun levelingBump(x: Double, coefficient: Double, offset: Double): Double {
+        return ((coefficient* log(x, 2.11)) /(exp(-1*(x-offset))+1 ))
+    }
 
-    fun nextLevelReq(level: Long): Double{
-        var reqEXP = 0.0
-        reqEXP = (LEVEL_COEFFICENT * (level + ((55* log(level.toDouble(), 2.11)) /(exp(-1*(level.toDouble()-LEVEL_OFFSET))+1 )) )) + LEVEL_CONSTANT
+    fun nextLevelReq(level: Long): Long{
+        var reqEXP = 0L
+        reqEXP = ((LEVEL_COEFFICENT * (level
+                + levelingBump(level.toDouble(),15.0,10.0)
+                + levelingBump(level.toDouble(),100.0,50.0)
+                + levelingBump(level.toDouble(),200.0,100.0)
+                + levelingBump(level.toDouble(),400.0,200.0)
+                ))
+                + LEVEL_CONSTANT).toLong()
         return reqEXP
     }
 
@@ -39,27 +46,28 @@ object LevelingManager {
         var userName = ""
         var booster = false
         var avatar = ""
-        var banner = ""
+
         when(event) {
             is MessageReceivedEvent -> {
                 booster = event.member?.isBoosting ?: return
                 userName = event.member!!.user.name
                 avatar = event.author.effectiveAvatarUrl
             }
-            is GuildVoiceUpdateEvent -> {
+            is GuildVoiceState -> {
                 booster = event.member.isBoosting
                 userName = event.member.user.name
+                avatar = event.member.user.effectiveAvatarUrl
 
             }
             null -> return
         }
             when (booster) {
                 true -> USER_PROFILE.updateExperience(
-                    user.experience + (expGain * (NITRO_BONUS * (user.multiplier))),
+                    (user.experience + (expGain * (NITRO_BONUS * (user.multiplier)))).toLong(),
                     user.user_id
                 )
 
-                else -> USER_PROFILE.updateExperience(user.experience + (expGain * user.multiplier), user.user_id)
+                else -> USER_PROFILE.updateExperience((user.experience + (expGain * user.multiplier)).toLong(), user.user_id)
             }
 
         if (!checkLevel(userID)) return
@@ -74,20 +82,19 @@ object LevelingManager {
                     )
                 }`"
             )
+
             //todo FIX LEVELING ROUNDING
             .setFooter("IN BETA, THIS WILL BE WIPED")
             .build()
 
         USER_PROFILE.updateLevel(user.current_level + 1, userID)
-        USER_PROFILE.updateExperience(0.0, userID)
+        USER_PROFILE.updateExperience(0, userID)
         when(event) {
             is MessageReceivedEvent  -> {
                 event.message.replyEmbeds(levelEmbed).queue()
             }
-            is GuildVoiceUpdateEvent -> {
-                if (event.channelLeft == null) return
-                event.guild.getVoiceChannelById(event.channelLeft!!.idLong)?.sendMessage("<@${userID}>")?.queue()
-                event.guild.getVoiceChannelById(event.channelLeft!!.idLong)?.sendMessageEmbeds(levelEmbed)?.queue()
+            is GuildVoiceState -> {
+                event.member.voiceState?.channel?.idLong?.let { event.guild.getVoiceChannelById(it) }?.sendMessageEmbeds(levelEmbed)?.queue()
             }
         }
     }

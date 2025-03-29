@@ -3,6 +3,7 @@ package org.nocturne
 import io.github.cdimascio.dotenv.dotenv
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import org.nocturne.database.DataBaseManager
 import org.nocturne.listeners.OnMessageSentListener
 import org.nocturne.listeners.GlobalListeners
@@ -18,11 +19,7 @@ class App {
     }
 
     fun start() {
-        try {
-            NocturneDB.Schema.create(DataBaseManager.driver)
-        } catch (ignored: Exception) {
-        }
-
+        DataBaseManager.init()
 
         val dotenv = dotenv {
             directory = "private"
@@ -41,8 +38,9 @@ class App {
         intents.add(GatewayIntent.GUILD_MEMBERS)
         intents.add(GatewayIntent.GUILD_VOICE_STATES)
 
-        JDABuilder.createLight(token, intents)
+        JDABuilder.createDefault(token, intents)
             .addEventListeners(GlobalListeners, OnMessageSentListener())
+            .setMemberCachePolicy(MemberCachePolicy.VOICE)
             .build()
     }
 }

@@ -85,8 +85,9 @@ object LeaderboardCommand {
         val user = USER_PROFILE.selectUserByUserId(userID).executeAsOneOrNull()?: return
         val userRankEmbed = EmbedBuilder()
             .setColor(Color(115, 138, 255))
-            .setTitle("${event.user.name} Rank: `${sortedUsers.indexOf(user)+1}`")
-            .setDescription("## Lvl. ${user.current_level}\n-# ${user.experience}/${LevelingManager.nextLevelReq((user.current_level+1))}")
+            .setAuthor(event.user.name,null,event.user.effectiveAvatarUrl)
+            .setTitle("Rank: `${sortedUsers.indexOf(user)+1}`")
+            .setDescription("────── ⋆⋅☆⋅⋆ ──────\n## Lvl. ${user.current_level}\n-# ${user.experience}/${LevelingManager.nextLevelReq((user.current_level+1))}\n────── ⋆⋅☆⋅⋆ ──────")
             .build()
         event.replyEmbeds(userRankEmbed).setEphemeral(false).queue()
     }

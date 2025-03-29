@@ -1,11 +1,13 @@
 CREATE TABLE UserProfile (
      user_id INTEGER PRIMARY KEY NOT NULL,
      current_level INTEGER NOT NULL,
-     experience REAL NOT NULL,
+     experience INTEGER NOT NULL,
      multiplier REAL NOT NULL,
      cooldown INTEGER NOT NULL,
      lunaris INTEGER NOT NULL
 );
+
+-- TODO Need to add migrations to integrate other levelings for specific attributes
 
 selectAll:
 SELECT * FROM UserProfile;
@@ -13,8 +15,6 @@ SELECT * FROM UserProfile;
 selectUserByUserId:
 SELECT * FROM UserProfile
 WHERE user_id = ?;
-
-
 
 selectUserSortedByLevelDesc:
 SELECT * FROM UserProfile ORDER BY

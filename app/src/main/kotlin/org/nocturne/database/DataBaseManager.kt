@@ -2,11 +2,26 @@ package org.nocturne.database
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import org.nocturne.UserProfileQueries
+import org.nocturne.*
 
 object DataBaseManager {
 
-    val driver: SqlDriver = JdbcSqliteDriver("jdbc:sqlite:nocturne.db")
-    val USER_PROFILE = UserProfileQueries(driver)
+    lateinit var USER_DRIVER: SqlDriver
+    lateinit var GUILD_DRIVER: SqlDriver
+    //todo add to gitignore
+    lateinit var USER_PROFILE: UserProfileQueries
+    lateinit var REACT_MILESTONE: ReactMilestoneQueries
 
+    fun init() {
+        try {
+            USER_DRIVER = JdbcSqliteDriver("jdbc:sqlite:user.db")
+            GUILD_DRIVER = JdbcSqliteDriver("jdbc:sqlite:guild.db")
+            USER_PROFILE = UserProfileQueries(USER_DRIVER)
+            REACT_MILESTONE = ReactMilestoneQueries(GUILD_DRIVER)
+            NocturneDB.Schema.create(DataBaseManager.GUILD_DRIVER)
+            NocturneDB.Schema.create(DataBaseManager.USER_DRIVER)
+            } catch (ignored: Exception) {
+        }
+
+    }
 }

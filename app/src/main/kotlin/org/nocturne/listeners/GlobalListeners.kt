@@ -1,6 +1,8 @@
 package org.nocturne.listeners
 
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -32,6 +34,13 @@ object GlobalListeners : ListenerAdapter() {
         CommandManager.initializeCommands(event.jda)
     }
 
+    val onGuildMemberJoinEventSubscribers = HashMap<String, ((GuildMemberJoinEvent) -> Unit)>()
+    override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
+        super.onGuildMemberJoin(event)
+        for (subscriberCallback in onGuildMemberJoinEventSubscribers.values) {
+            subscriberCallback(event)
+        }
+    }
 
     val onMessageReceivedSubscribers = HashMap<String, ((MessageReceivedEvent) -> Unit)>()
     override fun onMessageReceived(event: MessageReceivedEvent) {
@@ -64,6 +73,8 @@ object GlobalListeners : ListenerAdapter() {
         val cb = onButtonInteractionSubscribers[event.componentId]
         cb?.invoke(event)
     }
+
+
 
     val onSlashCommandInteractionSubscribers = HashMap<String, ((SlashCommandInteractionEvent) -> Unit)>()
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {

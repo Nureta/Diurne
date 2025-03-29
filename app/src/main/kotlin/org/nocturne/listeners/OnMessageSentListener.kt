@@ -17,16 +17,16 @@ class OnMessageSentListener : ListenerAdapter() {
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
         val userID = event.author.idLong
-        val EXPERIENCE_GAIN = 5.0
+        val EXPERIENCE_GAIN = 30.0
         val user = USER_PROFILE.selectUserByUserId(userID).executeAsOneOrNull()
         val currentTime = System.currentTimeMillis()
 
         if (event.author.isBot) return
-        logger.debug("[{}] {}: {}\n", event.getChannel(), event.author, event.message.contentDisplay)
+        logger.debug("[{}] {}: {}\n", event.channel, event.author, event.message.contentDisplay)
 
         //Inserts unique user if no discord user id is present in the table
         if (user == null) {
-            USER_PROFILE.insertUser(userID, 1, 0.0, 0, 1.0,0)
+            USER_PROFILE.insertUser(userID, 1, 0, 0, 1.0,0)
             return
         }
         //todo, HAVE THIS THINGY FOR FIRST USER JOINS TOO! also this weird ASS bug where you gotta send multiple requests before you are inserted into the db

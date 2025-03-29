@@ -4,6 +4,10 @@ test.db
 **/test.db
 nocturne.db
 **/nocturne.db
+guild.db
+**/guild.db
+user.db
+**/user.db
 model/
 hatemodel/
 
