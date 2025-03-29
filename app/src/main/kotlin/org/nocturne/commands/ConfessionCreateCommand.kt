@@ -11,7 +11,8 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import org.nocturne.listeners.GlobalListeners
-import org.nocturne.sockets.SocketManager
+import org.nocturne.webserver.ComputeJobManager
+import org.nocturne.webserver.WebServer
 
 object ConfessionCreateCommand {
     val COMMAND_NAME = "confession"
@@ -54,7 +55,7 @@ object ConfessionCreateCommand {
 
         // Try getting a toxicity reading
         val toxic = checkToxicity(confession)
-        if (toxic != null && toxic.isNotEmpty()) {
+        if (!toxic.isNullOrEmpty()) {
             confession += "\n${toxic}"
         }
         val confessionEmbed = EmbedBuilder()
@@ -69,17 +70,14 @@ object ConfessionCreateCommand {
         event.reply("Confession has been sent!").setEphemeral(true).queue()
     }
 
-    private fun checkToxicity(confession: String): String? {
-        val conn = SocketManager.clientConnection ?: return null
 
-        var toxicity = conn.requestToxicCheck(confession).waitBlocking(5000)
+    private fun checkToxicity(confession: String): String? {
+        if (!WebServer.hasSocketConnection()) return null
+
+        val toxicity = ComputeJobManager.requestToxicCheck(confession).waitBlocking(5000)
         if (toxicity.isNullOrEmpty()) return null
-        val splitToxic = toxicity.split(",")
-        if (splitToxic.size != 2) return null
-        var neutral = splitToxic[0].toFloatOrNull() ?: return null
-        var toxic = splitToxic[1].toFloatOrNull() ?: return null
-        neutral = Math.round(neutral * 100.0f) / 100.0f
-        toxic = Math.round(toxic * 100.0f) / 100.0f
+        val neutral = toxicity["neutral"]
+        val toxic = toxicity["toxic"]
         return "Toxicity: $toxic"
     }
 

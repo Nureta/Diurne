@@ -2,3 +2,6 @@
 .idea
 __pycache__/
 __pycache__
+/ai/imagegen/stable_diffusion_model/
+cache/
+cache/*

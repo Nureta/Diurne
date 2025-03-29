@@ -50,6 +50,7 @@ object CommandManager {
         LeaderboardCommand.init()
         EditUserProfileCommand.init()
         CheckRankCommand.init()
+        QuoteGenCommand.init()
         // updateCommandMap(makeHelperTicket())
     }
 

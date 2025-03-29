@@ -1,13 +1,13 @@
-package org.nocturne.sockets
+package org.nocturne.webserver
 
 import java.util.concurrent.atomic.AtomicBoolean
 
 class CommandResultLock {
-    private var result: String = ""
+    private var result: Map<String, String> = HashMap<String,String>()
     private var isCompleted = AtomicBoolean(false)
     var SLEEP_WAIT = 200L
 
-    fun __complete(res: String) {
+    fun __complete(res: Map<String, String>) {
         this.result = res
         this.isCompleted.set(true)
     }
@@ -15,7 +15,7 @@ class CommandResultLock {
     /**
      * Wait for result until timeout is reached.
      */
-    fun waitBlocking(timeout: Long): String? {
+    fun waitBlocking(timeout: Long): Map<String, String>? {
         var waited = 0L
         Thread.sleep(SLEEP_WAIT/5)
         while (isCompleted.get() == false && waited < timeout) {
@@ -32,7 +32,7 @@ class CommandResultLock {
      * Poll for result nonblocking in a thread
      * Once result is populated or timeout is reached, call the callback
      */
-    fun waitCallback(timeout: Long, callback: (String?) -> Unit) {
+    fun waitCallback(timeout: Long, callback: (Map<String, String>?) -> Unit) {
         Thread {
             var waited = 0L
             Thread.sleep(SLEEP_WAIT/5)

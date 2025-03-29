@@ -1,18 +1,20 @@
 package org.nocturne.commands
 
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
-import okhttp3.internal.wait
+import net.dv8tion.jda.api.utils.FileUpload
 import org.nocturne.commands.CommandManager.adminUsers
 import org.nocturne.listeners.GlobalListeners
 import org.nocturne.webserver.ComputeJobManager
-import org.nocturne.webserver.WebServer
 import org.slf4j.LoggerFactory
+import java.io.File
 
-object SocketTestCommand {
-    val logger = LoggerFactory.getLogger(SocketTestCommand::class.java)
-    val COMMAND_NAME = "sockettest"
+
+object QuoteGenCommand {
+    val logger = LoggerFactory.getLogger(QuoteGenCommand::class.java)
+    val COMMAND_NAME = "quote"
     private var hasInit = false
 
     fun init() {
@@ -20,8 +22,9 @@ object SocketTestCommand {
         hasInit = true
         CommandManager.updateCommandMap(
             MyCommand(
-                COMMAND_NAME, Commands.slash(COMMAND_NAME, "Test socket echo")
-                    .addOption(OptionType.STRING, "msg", "What to echo"), null
+                COMMAND_NAME, Commands.slash(COMMAND_NAME, "Quote a user!")
+                    .addOption(OptionType.STRING, "quote", "Quote")
+                    .addOption(OptionType.USER, "user", "User"), null
             )
         )
         registerToGlobalListeners()
@@ -34,21 +37,31 @@ object SocketTestCommand {
     private fun onSlashCommand(event: SlashCommandInteractionEvent) {
         val sender = event.member?.user?.id ?: return
         if (!adminUsers.contains(sender)) return
-        val echoOpt = event.getOption("msg") ?: return
-        if (!WebServer.hasSocketConnection()) {
-            event.reply("No Socket Connection").setEphemeral(true).queue()
+        val quoteMsg = event.getOption("quote")?.asString ?: return
+        val author = event.getOption("user")?.asUser?.name ?: return
+        /* val conn = SocketManager.clientConnection
+        if (conn == null) {
+            event.reply("No connection").setEphemeral(true).queue()
             return
-        }
-        event.deferReply().queue()
+        }*/
+        event.deferReply(true).queue()
         var ping = System.currentTimeMillis()
-        val result = ComputeJobManager.requestEcho(echoOpt.asString).waitBlocking(5000)
+        val result = ComputeJobManager.generateQuoteAI(quoteMsg, author).waitBlocking(30000)
         ping = System.currentTimeMillis() - ping
         if (result == null) {
             event.hook.sendMessage("Client failed to reply").setEphemeral(true).queue()
             return
         }
-        val pingMsg = "Ping: $ping\nResult: ${result["result"]}"
+        val pingMsg = "Ping: $ping\nResult: ${result["filename"]}"
         event.hook.sendMessage(pingMsg).setEphemeral(true).queue()
+
+        val file = File(result["filepath"]!!)
+        if (file.exists()) {
+            val embed = EmbedBuilder()
+            embed.setImage("attachment://quote.png")
+            event.channel.sendMessageEmbeds(embed.build())
+                .addFiles(FileUpload.fromData(file, "quote.png")).queue()
+        }
         logger.info("${event.member?.user?.name ?: "Unknown User"}: ${pingMsg}\n")
     }
 }

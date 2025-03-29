@@ -52,6 +52,3 @@ def read_for_command(socket: ssl.SSLSocket):
 
 cmdManager = CommandManager(auth_pass)
 connect_to_server()
-
-
-

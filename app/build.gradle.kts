@@ -12,6 +12,7 @@ plugins {
     `java-library`
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    kotlin("plugin.serialization") version "2.1.0"
 }
 configurations { create("externalLibs") }
 
@@ -38,8 +39,11 @@ dependencies {
     implementation(libs.dotenv)
     implementation(libs.discord.jda)
     implementation(libs.guava)
+    implementation(libs.ktor.server)
+    implementation(libs.ktor.network)
+    implementation(libs.ktor.socket)
     implementation("app.cash.sqldelight:sqlite-driver:2.0.2")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 }
 
 sqldelight {

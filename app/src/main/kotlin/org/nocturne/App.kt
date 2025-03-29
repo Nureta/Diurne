@@ -8,6 +8,7 @@ import org.nocturne.database.DataBaseManager
 import org.nocturne.listeners.OnMessageSentListener
 import org.nocturne.listeners.GlobalListeners
 import org.nocturne.services.LevelingService
+import org.nocturne.webserver.WebServer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -28,8 +29,8 @@ class App {
         }
         val token = dotenv.get("DISCORD_TOKEN")
         val keystorePass = dotenv.get("KEYSTORE_PASS")
-        //  SocketManager.socketAuth = dotenv.get("AUTH_PASS")/
-        //  SocketManager.start(keystorePass, 15656)
+        WebServer.setAuth(keystorePass)
+        WebServer.start()
 
         val intents = ArrayList<GatewayIntent>()
         intents.add(GatewayIntent.GUILD_MESSAGES)
@@ -43,6 +44,8 @@ class App {
             .setMemberCachePolicy(MemberCachePolicy.VOICE)
             .build()
     }
+
+
 }
 
     fun main() {
