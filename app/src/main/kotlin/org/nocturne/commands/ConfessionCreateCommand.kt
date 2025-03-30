@@ -67,7 +67,6 @@ object ConfessionCreateCommand {
             .setActionRow(
                 Button.primary(CONFESSION_BUTTON_NEW, "Submit a new confession!")
             ).queue()
-        event.reply("Confession has been sent!").setEphemeral(true).queue()
     }
 
 

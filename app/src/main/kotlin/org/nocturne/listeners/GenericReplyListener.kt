@@ -1,6 +1,6 @@
 package org.nocturne.listeners
 
-object ReplyListener {
+object GenericReplyListener {
     private var hasInit = false
     fun init() {
         if (hasInit) return

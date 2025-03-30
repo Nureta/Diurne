@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy
 import org.nocturne.database.DataBaseManager
 import org.nocturne.listeners.OnMessageSentListener
 import org.nocturne.listeners.GlobalListeners
-import org.nocturne.services.LevelingService
 import org.nocturne.webserver.WebServer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -28,8 +27,6 @@ class App {
             ignoreIfMissing = true
         }
         val token = dotenv.get("DISCORD_TOKEN")
-        val keystorePass = dotenv.get("KEYSTORE_PASS")
-        WebServer.setAuth(keystorePass)
         WebServer.start()
 
         val intents = ArrayList<GatewayIntent>()

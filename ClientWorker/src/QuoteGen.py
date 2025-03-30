@@ -60,7 +60,7 @@ def __create_post(image_file, quote_text: str, quote_font, author_font, output_p
         img_logo = Image.open(logo_file)
 
         # Reduce the alpha of the overlay image by 30%
-        alpha = 1
+        alpha = 0.7
         enhancer = ImageEnhance.Brightness(img_logo)
         img_logo_darken = enhancer.enhance(alpha)
 
@@ -89,8 +89,72 @@ def __create_post(image_file, quote_text: str, quote_font, author_font, output_p
     # combined.show()
     return f"{output_path}/{file_name}"
 
+
+def extend_image_with_gradient_and_text(image_path, output_path, text, author_text = None, font_path="./assets/lato.ttf", font_size=75):
+    gradient_magnitude = 2.
+    # Open the original image
+    img = Image.open(image_path)
+    if img.mode != 'RGBA':
+        img = img.convert('RGBA')
+    w, h = img.size
+
+    gradient = Image.new('L', (w, 1), color=0xFF)
+    for x in range(w):
+        gradient.putpixel((x, 0), int(255 * (1 - gradient_magnitude * float(x)/w)))
+
+    alpha = gradient.resize(img.size).rotate(180)
+    black_im = Image.new('RGBA', (w, h), color=0) # i.e. black
+    black_im.putalpha(alpha)
+    gradient_im = Image.alpha_composite(img, black_im)
+
+    # Extend Image to the right
+    nw = int(gradient_im.width * 2)
+    ext_img = Image.new("RGB", (nw, h), "black")
+    ext_img.paste(gradient_im, (0,0))
+
+
+    # Add text
+    draw = ImageDraw.Draw(ext_img)
+    num_chars = len(text)
+    text_wrap = 20
+    try:
+        if num_chars > 500:
+            text_wrap = 50
+            font_size = 12
+        elif num_chars > 300:
+            text_wrap = 40
+            font_size = 24
+        elif num_chars > 120:
+            text_wrap = 30
+            font_size = 25
+        font = ImageFont.truetype(font_path, font_size)  # Load custom font
+    except:
+        font = ImageFont.load_default()  # Fallback if font not found
+
+    new_text = textwrap.fill(text=text, width=text_wrap)
+
+    x_text = (ext_img.size[0] / 4) * 3
+    y_text = img.size[1] / 2
+    quote_position = (x_text, y_text)
+
+    # Add main text to the image
+    draw.text(quote_position, text=new_text, font=font, fill=(255, 255, 255, 255), anchor='mm',
+              stroke_fill=(0, 0, 0, 255), stroke_width=5,
+              align='center')
+
+    if author_text is not None:
+        # Add author text
+        author_font = ImageFont.truetype(font=f'{font_path}', size=45)
+        num_of_lines = new_text.count("\n") + 1
+        author_position = (quote_position[0], int(ext_img.size[1] * 0.8))
+        draw.text(author_position, text=author_text, font=author_font, fill=(255, 255, 255, 255), anchor='mm',
+                  align='center', stroke_fill=(0, 0, 0, 255), stroke_width=5)
+    # Save output
+    ext_img.save(output_path)
+
+
 def create_quote(img_file: str, quote_text: str, author: str | None, output_path: str, output_file: str):
-    __create_post(img_file, quote_text, 'garamond.ttf',
-                'garamond.ttf', output_path,
+    __create_post(img_file, quote_text, './assets/lato.ttf',
+                './assets/lato.ttf', output_path,
                 output_file, None, author)
 
