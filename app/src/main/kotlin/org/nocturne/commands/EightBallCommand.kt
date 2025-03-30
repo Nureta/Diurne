@@ -36,6 +36,5 @@ object EightBallCommand {
     private fun onSlashCommand(event: SlashCommandInteractionEvent) {
         val eightBallChoice = EIGHT_BALL_CHOICE[Random.nextInt(0, EIGHT_BALL_CHOICE.size)]
         event.reply(eightBallChoice).queue()
-
     }
 }

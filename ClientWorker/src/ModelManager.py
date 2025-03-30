@@ -2,15 +2,13 @@
 Manages AI Models or intensive compute tasks
 """
 import datetime
-import os
 import subprocess
-import time
 
 import torch
 from transformers import RobertaTokenizer, RobertaForSequenceClassification, AutoTokenizer, AutoModelForSequenceClassification
 from diffusers import StableDiffusionPipeline
 
-from QuoteGen import create_quote
+from QuoteGen import create_quote, extend_image_with_gradient_and_text
 
 # AI STUFF
 
@@ -33,7 +31,7 @@ def check_toxic(prompt: str) -> tuple[float, float]:
 # IMAGE GEN MODEL
 STABLE_DIFFUSION_DIR = "../ai/imagegen/stable_diffusion_model"
 POSITIVE_PROMPT_FILE = "../ai/imagegen/positive_prompt.txt"
-negative_prompt = "blurry, low-resolution, distorted, bad anatomy, dark, overexposed, worst quality, low quality, normal quality"
+negative_prompt = "human, face, person, blurry, low-resolution, distorted, bad anatomy, dark, overexposed, worst quality, low quality, normal quality"
 CACHE_DIR = "../cache"
 positive_prompt = ""
 
@@ -52,7 +50,7 @@ def createStableDiffImg(prompt: str) -> str:
     now = datetime.datetime.now()
     formatted_time = now.strftime("%m-%d_%H-%M-S")
     filename = f"{CACHE_DIR}/{formatted_time}.png"
-    image = pipe(prompt, num_inference_steps=30, guidance_scale=12).images[0]
+    image = pipe(prompt, num_inference_steps=50, guidance_scale=10, negative_prompt=negative_prompt).images[0]
     image.save(filename)
     cmd = f'/usr/bin/realesrgan-ncnn-vulkan -i "{filename}" -o "{filename}" -s 2'
     result = subprocess.run(cmd, shell=True)
@@ -61,7 +59,9 @@ def createStableDiffImg(prompt: str) -> str:
 
 def createQuoteImg(quote: str, author: str) -> str:
     img_path = createStableDiffImg(quote)
-    fname = img_path.split("/")[-1]
-    create_quote(img_path, quote, author, CACHE_DIR, fname)
-    return f"{CACHE_DIR}/{fname}"
+    extend_image_with_gradient_and_text(img_path, img_path, quote, f"- {author}")
+    return img_path
+    # fname = img_path.split("/")[-1]
+    # create_quote(img_path, quote, author, CACHE_DIR, fname)
+    # return f"{CACHE_DIR}/{fname}"
 

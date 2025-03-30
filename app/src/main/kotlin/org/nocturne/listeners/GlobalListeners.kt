@@ -42,9 +42,19 @@ object GlobalListeners : ListenerAdapter() {
         }
     }
 
+    val onMessageReplySubscribers = HashMap<String, ((MessageReceivedEvent) -> Unit)>()
+    fun onMessageReply(event: MessageReceivedEvent) {
+        for (subscriberCb in onMessageReplySubscribers.values) {
+            subscriberCb(event)
+        }
+    }
+
     val onMessageReceivedSubscribers = HashMap<String, ((MessageReceivedEvent) -> Unit)>()
     override fun onMessageReceived(event: MessageReceivedEvent) {
         super.onMessageReceived(event)
+        if (event.message.messageReference != null) {
+            this.onMessageReply(event)
+        }
         for (subscriberCb in onMessageReceivedSubscribers.values) {
             subscriberCb(event)
         }

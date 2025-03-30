@@ -2,6 +2,7 @@ import asyncio
 import base64
 import json
 import threading
+import sys
 import urllib.parse
 from typing import List
 
@@ -16,10 +17,19 @@ from src.CommandManager import CommandManager
 
 dotenv.load_dotenv()
 env_vals = dotenv.dotenv_values(".env")
-SOCKET_URL = env_vals["SOCKET_URL"]
-SERVER_URL = env_vals["SERVER_URL"]
+
 AUTH_PASS = env_vals["AUTH_PASS"]
 assert AUTH_PASS is not None
+
+
+SOCKET_URL = env_vals["SOCKET_URL"]
+SERVER_URL = env_vals["SERVER_URL"]
+if (len(sys.argv) > 1):
+    isDebug = sys.argv[1]
+    if isDebug.lower().startswith('debug'):
+        SOCKET_URL = env_vals["LOCAL_SOCKET_URL"]
+        SERVER_URL = env_vals["LOCAL_SERVER_URL"]
+
 
 async def listen():
     retry_delay = 3
@@ -76,12 +86,15 @@ def post_quote_gen(id: str, quote: str, author: str):
     filename, result = commandManager.do_quotegen(quote, author)
     result = result.decode("ASCII")
     filename = urllib.parse.quote_plus(filename)
-    requests.post(f"{SERVER_URL}/result/quote?id={id}&filename={filename}", data=result)
+    resp = requests.post(f"{SERVER_URL}/result/quote?id={id}&filename={filename}", data=result)
+    print(resp)
 
 def post_toxic_check(id: str, msg: str):
     neutral, toxic = commandManager.do_toxic_check(msg)
-    requests.post(f"{SERVER_URL}/result/toxic?id={id}",
+    resp = requests.post(f"{SERVER_URL}/result/toxic?id={id}",
                   {"neutral": neutral, "toxic": toxic})
+    print(resp)
+
 
 
 def getGenericJsonResult(id: str, result: str):

@@ -7,12 +7,10 @@ import io.ktor.server.routing.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.engine.*
-import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
-import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
@@ -65,6 +63,7 @@ fun Application.module() {
             val resultPath = WebServer.saveCacheFile(filename, data)
             val result = hashMapOf("filename" to filename, "filepath" to resultPath)
             ComputeJobManager.genericMapResult(UUID.fromString(id), result)
+            call.respond(HttpStatusCode.OK)
         }
         post("/result/toxic") {
             val params = call.queryParameters
@@ -88,7 +87,9 @@ fun Application.module() {
 }
 
 object WebServer {
-    private var AUTH_PASS = ""
+    private var CERT_PASS = ""
+    private var CERT_PATH = ""
+
     var server:  EmbeddedServer<NettyApplicationEngine, NettyApplicationEngine.Configuration>? = null
     var socketConnections = ArrayList<WebSocketSession>()
     fun start() {
@@ -106,30 +107,14 @@ object WebServer {
     }
 
     private fun ApplicationEngine.Configuration.envConfig() {
-
-        val keyStoreFile = File("private/server-keystore.jks")
-        val keyStore = buildKeyStore {
-            certificate("ktorAlias") {
-                password = AUTH_PASS
-                domains = listOf("127.0.0.1", "0.0.0.0", "localhost")
-            }
-        }
-        keyStore.saveToFile(keyStoreFile, AUTH_PASS)
         connector {
-            port = 15657
-        }
-        sslConnector(
-            keyStore = keyStore,
-            keyAlias = "ktorAlias",
-            keyStorePassword = { AUTH_PASS.toCharArray() },
-            privateKeyPassword = { AUTH_PASS.toCharArray() }) {
-            port = 8443
-            keyStorePath = keyStoreFile
+            port = 15656
         }
     }
 
-    fun setAuth(pass: String) {
-        AUTH_PASS = pass
+    fun setAuth(pass: String, path: String) {
+        CERT_PASS = pass
+        CERT_PATH = path
     }
 
 
