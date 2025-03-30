@@ -91,7 +91,7 @@ def __create_post(image_file, quote_text: str, quote_font, author_font, output_p
 
 
 def extend_image_with_gradient_and_text(image_path, output_path, text, author_text = None, font_path="./assets/lato.ttf", font_size=75):
-    gradient_magnitude = 1.
+    gradient_magnitude = 2.
     # Open the original image
     img = Image.open(image_path)
     if img.mode != 'RGBA':
