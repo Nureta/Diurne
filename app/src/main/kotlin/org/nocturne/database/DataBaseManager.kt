@@ -18,7 +18,7 @@ object DataBaseManager {
         try {
             logger.info("Initializing Database")
             USER_DRIVER = JdbcSqliteDriver("jdbc:sqlite:../../user.db")
-            GUILD_DRIVER = JdbcSqliteDriver("jdbc:sqlite:../..//guild.db")
+            GUILD_DRIVER = JdbcSqliteDriver("jdbc:sqlite:../../guild.db")
 
             // Initialize tables
             try {
