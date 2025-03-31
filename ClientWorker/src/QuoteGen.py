@@ -91,6 +91,9 @@ def __create_post(image_file, quote_text: str, quote_font, author_font, output_p
 
 
 def extend_image_with_gradient_and_text(image_path, output_path, text, author_text = None, font_path="./assets/lato.ttf", font_size=75):
+    if not (text.startswith("\"") or text.endswith("\"")):
+        text = f"\"{text}\""
+
     gradient_magnitude = 2.
     # Open the original image
     img = Image.open(image_path)
@@ -108,7 +111,7 @@ def extend_image_with_gradient_and_text(image_path, output_path, text, author_te
     gradient_im = Image.alpha_composite(img, black_im)
 
     # Extend Image to the right
-    nw = int(gradient_im.width * 2)
+    nw = int(gradient_im.width * 1.7)
     ext_img = Image.new("RGB", (nw, h), "black")
     ext_img.paste(gradient_im, (0,0))
 
@@ -116,7 +119,7 @@ def extend_image_with_gradient_and_text(image_path, output_path, text, author_te
     # Add text
     draw = ImageDraw.Draw(ext_img)
     num_chars = len(text)
-    text_wrap = 20
+    text_wrap = 15
     try:
         if num_chars > 500:
             text_wrap = 50
@@ -133,8 +136,8 @@ def extend_image_with_gradient_and_text(image_path, output_path, text, author_te
 
     new_text = textwrap.fill(text=text, width=text_wrap)
 
-    x_text = (ext_img.size[0] / 4) * 3
-    y_text = img.size[1] / 2
+    x_text = (ext_img.size[0] * 0.8)
+    y_text = img.size[1] * 0.35
     quote_position = (x_text, y_text)
 
     # Add main text to the image

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 import org.nocturne.UserProfile
 import org.nocturne.UserProfileQueries
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import org.nocturne.database.DataBaseManager.GUILD_DRIVER
 
 import org.nocturne.database.DataBaseManager.USER_PROFILE
 import org.nocturne.listeners.GlobalListeners
@@ -81,6 +82,7 @@ object LeaderboardCommand {
     private fun onCheckRankButtonOnInteraction(event: ButtonInteractionEvent) {
         if (event.componentId != CHECK_USER_RANK_BOTTON) return
         val sortedUsers = USER_PROFILE.selectUserSortedByLevelDesc().executeAsList()
+
         val userID = event.user.idLong
         val user = USER_PROFILE.selectUserByUserId(userID).executeAsOneOrNull()?: return
         val userRankEmbed = EmbedBuilder()

@@ -34,14 +34,14 @@ object SocketTestCommand {
     private fun onSlashCommand(event: SlashCommandInteractionEvent) {
         val sender = event.member?.user?.id ?: return
         if (!adminUsers.contains(sender)) return
-        val echoOpt = event.getOption("msg") ?: return
+        val echoOpt = event.getOption("msg")?.asString ?: "test"
         if (!WebServer.hasSocketConnection()) {
             event.reply("No Socket Connection").setEphemeral(true).queue()
             return
         }
         event.deferReply().queue()
         var ping = System.currentTimeMillis()
-        val result = ComputeJobManager.requestEcho(echoOpt.asString).waitBlocking(5000)
+        val result = ComputeJobManager.requestEcho(echoOpt).waitBlocking(5000)
         ping = System.currentTimeMillis() - ping
         if (result == null) {
             event.hook.sendMessage("Client failed to reply").setEphemeral(true).queue()
