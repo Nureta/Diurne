@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.nocturne.commands.CommandManager
+import org.nocturne.database.GuildAttributeManager
 import org.nocturne.services.LevelingService
 
 object GlobalListeners : ListenerAdapter() {
@@ -23,6 +24,7 @@ object GlobalListeners : ListenerAdapter() {
             subscriberCallback(event)
         }
         CommandManager.initializeCommands(event.jda)
+        CommandManager.registerAllCommandMapCommands()
     }
 
     val onGuildReadyEventSubscribers = HashMap<String, ((GuildReadyEvent) -> Unit)>()
@@ -32,6 +34,7 @@ object GlobalListeners : ListenerAdapter() {
             subscriberCallback(event)
         }
         CommandManager.initializeCommands(event.jda)
+        GuildAttributeManager.initGuild(event.guild.idLong)
     }
 
     val onGuildMemberJoinEventSubscribers = HashMap<String, ((GuildMemberJoinEvent) -> Unit)>()

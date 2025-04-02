@@ -68,9 +68,10 @@ fun Application.module() {
         post("/result/toxic") {
             val params = call.queryParameters
             val id = params.get("id")
-            val data = Json.parseToJsonElement(call.receiveText())
+            val jsonData = call.receiveText()
+            val data = Json.parseToJsonElement(jsonData)
             val neutral = data.jsonObject.get("neutral").toString()
-            val toxic = data.jsonObject.get("toxic").toString()
+            val toxic = data.jsonObject.get("toxic").toString().removeSuffix("\"")
             val result = hashMapOf("neutral" to neutral, "toxic" to toxic)
             ComputeJobManager.genericMapResult(UUID.fromString(id), result)
         }
