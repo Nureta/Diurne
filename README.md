@@ -1,6 +1,6 @@
 # Diurne
 The Nocturne's Server personal discord bot!
--# discord.gg/noctis
+<sub>discord.gg/noctis<\sub>
 
 ### Generate Client/Server Certificates
 *Generate Certs & Keys*
