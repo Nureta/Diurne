@@ -10,7 +10,7 @@ user.db
 **/user.db
 model/
 hatemodel/
-
+./remote_update.sh
 # SSL
 *.pem
 *.p12

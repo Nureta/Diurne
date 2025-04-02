@@ -9,6 +9,7 @@ class ComputeJob(val command: String, val params: List<String>) {
         val CMD_REQUEST_ECHO = "REQUEST_ECHO"
         val CMD_REQUEST_TOXIC_CHECK = "REQUEST_TOXIC_CHECK"
         val CMD_REQUEST_QUOTE_GEN = "REQUEST_QUOTE_GEN"
+        val CMD_REQUEST_PFP_QUOTE_GEN = "REQUEST_PFP_QUOTE_GEN"
         val TIMEOUT = 100_000L
     }
 

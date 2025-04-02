@@ -44,11 +44,11 @@ object SocketTestCommand {
         val result = ComputeJobManager.requestEcho(echoOpt).waitBlocking(5000)
         ping = System.currentTimeMillis() - ping
         if (result == null) {
-            event.hook.sendMessage("Client failed to reply").setEphemeral(true).queue()
+            event.reply("Client failed to reply").setEphemeral(true).queue()
             return
         }
         val pingMsg = "Ping: $ping\nResult: ${result["result"]}"
-        event.hook.sendMessage(pingMsg).setEphemeral(true).queue()
+        event.reply(pingMsg).setEphemeral(true).queue()
         logger.info("${event.member?.user?.name ?: "Unknown User"}: ${pingMsg}\n")
     }
 }
