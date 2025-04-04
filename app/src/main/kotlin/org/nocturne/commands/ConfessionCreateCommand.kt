@@ -15,6 +15,7 @@ import org.nocturne.database.GuildAttributeManager
 import org.nocturne.listeners.GlobalListeners
 import org.nocturne.webserver.ComputeJobManager
 import org.nocturne.webserver.WebServer
+import java.awt.Color
 
 object ConfessionCreateCommand {
     val COMMAND_NAME = "confession"
@@ -51,8 +52,7 @@ object ConfessionCreateCommand {
         var confession = event.getValue(CONFESSION_MODAL_TEXT_ID)?.asString ?: return
         val confessionChannel = this.getConfessionChannel(event.guild!!.idLong)
 
-        event.deferReply(true)
-
+        event.reply("Processing...").setEphemeral(true).queue();
         // Try getting a toxicity reading
         var toxic: String? = null
         if (WebServer.hasSocketConnection()) {
@@ -63,14 +63,14 @@ object ConfessionCreateCommand {
         }
         val confessionEmbed = EmbedBuilder()
             .setTitle("Confession")
+            .setColor(Color.blue)
             .setDescription(confession)
             .build()
 
         event.guild!!.getTextChannelById(confessionChannel)!!.sendMessageEmbeds(confessionEmbed)
             .setActionRow(
-                Button.primary(CONFESSION_BUTTON_NEW, "Submit a new confession!")
+                Button.primary(CONFESSION_BUTTON_NEW, "Submit a confession!")
             ).queue()
-        event.hook.sendMessage("Processed!").setEphemeral(true).queue()
     }
 
 

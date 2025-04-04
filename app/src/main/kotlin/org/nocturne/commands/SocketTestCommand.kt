@@ -39,7 +39,6 @@ object SocketTestCommand {
             event.reply("No Socket Connection").setEphemeral(true).queue()
             return
         }
-        event.deferReply().queue()
         var ping = System.currentTimeMillis()
         val result = ComputeJobManager.requestEcho(echoOpt).waitBlocking(5000)
         ping = System.currentTimeMillis() - ping

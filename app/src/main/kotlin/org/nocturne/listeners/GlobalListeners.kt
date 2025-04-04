@@ -34,6 +34,7 @@ object GlobalListeners : ListenerAdapter() {
             subscriberCallback(event)
         }
         CommandManager.initializeCommands(event.jda)
+        CommandManager.registerAllCommandMapCommands()
         GuildAttributeManager.initGuild(event.guild.idLong)
     }
 
