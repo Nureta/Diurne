@@ -1,9 +1,11 @@
 package org.nocturne.commands
 
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -29,7 +31,9 @@ object ConfessionCreateCommand {
         if (hasInit) return
         hasInit = true
         CommandManager.updateCommandMap(
-            MyCommand(COMMAND_NAME, Commands.slash(COMMAND_NAME,"Send a anonymous confession"), null)
+            MyCommand(COMMAND_NAME,
+                Commands.slash(COMMAND_NAME,"Send a anonymous confession")
+                    .setDefaultPermissions(DefaultMemberPermissions.ENABLED), null)
         )
         registerToGlobalListeners()
         GuildAttributeManager.addDefaultGuildAttribute(CONFESSION_CHANNEL_ATTRIBUTE, GuildAttributeManager.CHANNEL_TYPE)

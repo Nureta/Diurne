@@ -1,6 +1,7 @@
 package org.nocturne.commands
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import okhttp3.internal.concurrent.formatDuration
@@ -24,6 +25,7 @@ object ChatReviveCommand {
         CommandManager.updateCommandMap(
             MyCommand(
                 COMMAND_NAME, Commands.slash(COMMAND_NAME, "Request people to talk!")
+                    .setDefaultPermissions(DefaultMemberPermissions.ENABLED)
                  , null
             )
         )

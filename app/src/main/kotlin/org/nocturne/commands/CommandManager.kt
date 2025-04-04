@@ -2,6 +2,7 @@ package org.nocturne.commands
 
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -72,6 +73,15 @@ object CommandManager {
         }
         if (cmdData.isEmpty()) return
         mJda.updateCommands().addCommands(cmdData).queue()
+    }
+
+    fun registerGuildCommands(guild: Guild) {
+        val cmdData = ArrayList<CommandData>()
+        for (cmd in commandMap.values) {
+            cmdData.add(cmd.data)
+        }
+        if (cmdData.isEmpty()) return
+        guild.updateCommands().addCommands(cmdData).queue()
     }
 
     /**
