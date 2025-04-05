@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.utils.FileUpload
@@ -31,7 +32,8 @@ object QuoteGenCommand {
             MyCommand(
                 COMMAND_NAME, Commands.slash(COMMAND_NAME, "Quote a user!")
                     .addOption(OptionType.STRING, "quote", "Quote", true)
-                    .addOption(OptionType.USER, "user", "User", true), null
+                    .addOption(OptionType.USER, "user", "User", true)
+                    .setDefaultPermissions(DefaultMemberPermissions.ENABLED), null
             )
         )
         registerToGlobalListeners()

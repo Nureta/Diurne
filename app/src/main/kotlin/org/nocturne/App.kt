@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 
 
 
-class App {
+class App(val mode: String) {
     companion object {
         var logger: Logger = LoggerFactory.getLogger(App::class.java)
     }
@@ -26,7 +26,14 @@ class App {
             ignoreIfMalformed = true
             ignoreIfMissing = true
         }
-        val token = dotenv.get("DISCORD_TOKEN")
+        val token: String
+        if (mode == "prod") {
+            logger.info("Starting in PROD")
+            token = dotenv.get("PROD_DISCORD_TOKEN")
+        } else {
+            logger.info("Starting in DEV")
+            token = dotenv.get("DEV_DISCORD_TOKEN")
+        }
         WebServer.start()
 
         val intents = ArrayList<GatewayIntent>()
@@ -45,10 +52,10 @@ class App {
 
 }
 
-    fun main() {
-        val app = App()
+    fun main(args: Array<String>) {
+        val mode = if (args.isNotEmpty() && args[0].lowercase() == "prod") "prod" else "dev"
+        val app = App(mode)
         app.start()
-
     }
 
 

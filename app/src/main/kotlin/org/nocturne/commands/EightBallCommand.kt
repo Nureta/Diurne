@@ -1,6 +1,7 @@
 package org.nocturne.commands
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import org.nocturne.listeners.GlobalListeners
 import kotlin.random.Random
@@ -25,7 +26,8 @@ object EightBallCommand {
         hasInit = true
         CommandManager.updateCommandMap(
             MyCommand(
-                COMMAND_NAME, Commands.slash(COMMAND_NAME, "Roll an eight ball"), null
+                COMMAND_NAME, Commands.slash(COMMAND_NAME, "Roll an eight ball")
+                    .setDefaultPermissions(DefaultMemberPermissions.ENABLED), null
             )
         )
         registerToGlobalListeners()
