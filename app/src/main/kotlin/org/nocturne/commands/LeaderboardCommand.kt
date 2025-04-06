@@ -3,6 +3,7 @@ package org.nocturne.commands
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import org.nocturne.UserProfile
@@ -26,7 +27,8 @@ object LeaderboardCommand {
         hasInit = true
         CommandManager.updateCommandMap(
             MyCommand(
-                COMMAND_NAME, Commands.slash(COMMAND_NAME, "Server Leaderboard"), null
+                COMMAND_NAME, Commands.slash(COMMAND_NAME, "Server Leaderboard")
+                    .setDefaultPermissions(DefaultMemberPermissions.ENABLED), null
             )
         )
         registerToGlobalListeners()

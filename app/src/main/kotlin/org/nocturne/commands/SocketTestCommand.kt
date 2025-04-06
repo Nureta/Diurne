@@ -1,6 +1,7 @@
 package org.nocturne.commands
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import okhttp3.internal.wait
@@ -21,7 +22,8 @@ object SocketTestCommand {
         CommandManager.updateCommandMap(
             MyCommand(
                 COMMAND_NAME, Commands.slash(COMMAND_NAME, "Test socket echo")
-                    .addOption(OptionType.STRING, "msg", "What to echo"), null
+                    .addOption(OptionType.STRING, "msg", "What to echo")
+                    .setDefaultPermissions(DefaultMemberPermissions.ENABLED), null
             )
         )
         registerToGlobalListeners()
@@ -39,7 +41,6 @@ object SocketTestCommand {
             event.reply("No Socket Connection").setEphemeral(true).queue()
             return
         }
-        event.deferReply().queue()
         var ping = System.currentTimeMillis()
         val result = ComputeJobManager.requestEcho(echoOpt).waitBlocking(5000)
         ping = System.currentTimeMillis() - ping
