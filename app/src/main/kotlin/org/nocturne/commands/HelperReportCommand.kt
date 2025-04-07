@@ -108,6 +108,7 @@ object HelperReportCommand {
             .build()
         val votePoll = MessagePollBuilder("Vote for $reportR")
             .addAnswer("Yes")
+            .addAnswer("Neutral")
             .addAnswer("No")
             .setDuration(Duration.ofMinutes(60L))
             .build()
