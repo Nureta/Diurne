@@ -51,6 +51,7 @@ object CommandManager {
         EditUserProfileCommand.init()
         CheckRankCommand.init()
         QuoteGenCommand.init()
+        CoinFlipCommand.init()
         // updateCommandMap(makeHelperTicket())
     }
 

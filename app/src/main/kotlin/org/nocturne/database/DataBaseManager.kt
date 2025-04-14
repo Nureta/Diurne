@@ -10,6 +10,7 @@ object DataBaseManager {
     var logger: Logger = LoggerFactory.getLogger(DataBaseManager::class.java)
     lateinit var USER_DRIVER: SqlDriver
     lateinit var GUILD_DRIVER: SqlDriver
+
     //todo add to gitignore
     lateinit var USER_PROFILE: UserProfileQueries
     lateinit var REACT_MILESTONE: ReactMilestoneQueries

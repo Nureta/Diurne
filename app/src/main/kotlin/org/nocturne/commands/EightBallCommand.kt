@@ -16,7 +16,7 @@ object EightBallCommand {
         "My sources say no.",
         "Don’t count on it.",
         "Cannot predict now.",
-        " Concentrate and ask again."
+        "Concentrate and ask again."
     )
     private var hasInit = false
 

@@ -95,6 +95,7 @@ object GlobalListeners : ListenerAdapter() {
     init{
         OnMessageReactedListener.init()
         LevelingService.init()
+        OnNewUserJoinListener.init()
     }
 }
 

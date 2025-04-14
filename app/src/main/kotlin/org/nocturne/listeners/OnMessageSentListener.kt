@@ -4,8 +4,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.nocturne.logic.leveling.LevelingManager
 import org.nocturne.database.DataBaseManager.USER_PROFILE
+import org.nocturne.logic.economy.EconomyManager
 import org.slf4j.LoggerFactory
 import java.util.logging.Level
+import kotlin.random.Random
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -20,6 +22,7 @@ class OnMessageSentListener : ListenerAdapter() {
         val EXPERIENCE_GAIN = 30.0
         val user = USER_PROFILE.selectUserByUserId(userID).executeAsOneOrNull()
         val currentTime = System.currentTimeMillis()
+
 
         if (event.author.isBot) return
         logger.debug("[{}] {}: {}\n", event.channel, event.author, event.message.contentDisplay)
@@ -37,6 +40,7 @@ class OnMessageSentListener : ListenerAdapter() {
         if ((currentTime - user.cooldown) < EXP_COOLDOWN) return
         USER_PROFILE.updateCooldown(currentTime,user.user_id)
         LevelingManager.giveExperience(userID,EXPERIENCE_GAIN,event)
+        EconomyManager.giveLunaris(userID, Random.nextLong(10,25),event.member!!.isBoosting)
 
 
 
