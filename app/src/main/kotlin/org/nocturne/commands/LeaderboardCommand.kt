@@ -5,11 +5,13 @@ import net.dv8tion.jda.api.entities.EmbedType
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import org.nocturne.UserProfile
 import org.nocturne.UserProfileQueries
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import org.nocturne.database.DataBaseManager.GUILD_DRIVER
 
 import org.nocturne.database.DataBaseManager.USER_PROFILE
 import org.nocturne.listeners.GlobalListeners
@@ -27,7 +29,8 @@ object LeaderboardCommand {
         hasInit = true
         CommandManager.updateCommandMap(
             MyCommand(
-                COMMAND_NAME, Commands.slash(COMMAND_NAME, "Server Leaderboard"), null
+                COMMAND_NAME, Commands.slash(COMMAND_NAME, "Server Leaderboard")
+                    .setDefaultPermissions(DefaultMemberPermissions.ENABLED), null
             )
         )
         registerToGlobalListeners()
@@ -83,6 +86,7 @@ object LeaderboardCommand {
     private fun onCheckRankButtonOnInteraction(event: ButtonInteractionEvent) {
         if (event.componentId != CHECK_USER_RANK_BOTTON) return
         val sortedUsers = USER_PROFILE.selectUserSortedByLevelDesc().executeAsList()
+
         val userID = event.user.idLong
         val user = USER_PROFILE.selectUserByUserId(userID).executeAsOneOrNull()?: return
         var userRankEmbed: MessageEmbed

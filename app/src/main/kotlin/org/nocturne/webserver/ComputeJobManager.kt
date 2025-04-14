@@ -35,6 +35,13 @@ object ComputeJobManager {
         return addComputeJob(job)
     }
 
+    fun generateQuotePfp(quote: String, author: String, imgUrl: String): CommandResultLock {
+        val job = ComputeJob.Builder(ComputeJob.CMD_REQUEST_PFP_QUOTE_GEN)
+            .addParam(quote).addParam(author).addParam(imgUrl).build()
+        return addComputeJob(job)
+    }
+
+
     /**
      * Removes a compute job from the queue and returns it.
      */

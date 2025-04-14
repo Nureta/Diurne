@@ -89,10 +89,17 @@ def post_quote_gen(id: str, quote: str, author: str):
     resp = requests.post(f"{SERVER_URL}/result/quote?id={id}&filename={filename}", data=result)
     print(resp)
 
+def post_pfp_quote_gen(id: str, quote: str, author: str, imgUrl: str):
+    filename, result = commandManager.do_quotegen(quote, author)
+    result = result.decode("ASCII")
+    filename = urllib.parse.quote_plus(filename)
+    resp = requests.post(f"{SERVER_URL}/result/quote?id={id}&filename={filename}", data=result)
+    print(resp)
+
 def post_toxic_check(id: str, msg: str):
     neutral, toxic = commandManager.do_toxic_check(msg)
     resp = requests.post(f"{SERVER_URL}/result/toxic?id={id}",
-                  {"neutral": neutral, "toxic": toxic})
+                  json={"neutral": neutral, "toxic": toxic})
     print(resp)
 
 

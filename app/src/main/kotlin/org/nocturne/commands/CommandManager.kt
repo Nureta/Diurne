@@ -2,6 +2,7 @@ package org.nocturne.commands
 
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -23,6 +24,7 @@ object CommandManager {
     var adminUsers = arrayOf("393982976125435934", "321419785189720064","1347797953699647488")
 
     private var hasInit = false
+    private var hasRegistered = false
     val commandMap = HashMap<String, MyCommand>()
     lateinit var mJda: JDA
     fun initializeCommands(jda: JDA) {
@@ -32,7 +34,6 @@ object CommandManager {
 
         mJda.addEventListener(GenericCommandListener())
         initSimpleCommands()
-        registerAllCommandMapCommands()
     }
 
     /**
@@ -52,6 +53,7 @@ object CommandManager {
         CheckRankCommand.init()
         QuoteGenCommand.init()
         CoinFlipCommand.init()
+        AdminAttributeConfigureCommand.init()
         // updateCommandMap(makeHelperTicket())
     }
 
@@ -63,13 +65,24 @@ object CommandManager {
     /**
      * Take command map [command name] -> [MyCommand], and register every command to discord.
      */
-    private fun registerAllCommandMapCommands() {
+    fun registerAllCommandMapCommands() {
+        if (hasRegistered) return
+        hasRegistered = true
         val cmdData = ArrayList<CommandData>()
         for (cmd in commandMap.values) {
             cmdData.add(cmd.data)
         }
         if (cmdData.isEmpty()) return
         mJda.updateCommands().addCommands(cmdData).queue()
+    }
+
+    fun registerGuildCommands(guild: Guild) {
+        val cmdData = ArrayList<CommandData>()
+        for (cmd in commandMap.values) {
+            cmdData.add(cmd.data)
+        }
+        if (cmdData.isEmpty()) return
+        guild.updateCommands().addCommands(cmdData).queue()
     }
 
     /**

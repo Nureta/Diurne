@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.EmbedType
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
@@ -24,6 +25,7 @@ object CheckRankCommand {
             MyCommand(
                 COMMAND_NAME, Commands.slash(COMMAND_NAME, "Checks the user's rank")
                     .addOption(OptionType.USER,"user","User to check", false)
+                    .setDefaultPermissions(DefaultMemberPermissions.ENABLED)
                 ,null
             )
         )

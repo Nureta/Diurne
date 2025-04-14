@@ -1,0 +1,35 @@
+-- Stores one off data you need! --
+CREATE TABLE GenericAttributeStorage (
+    attribute_id TEXT NOT NULL,
+    guild_id INTEGER NOT NULL,
+    type TEXT,
+    data TEXT,
+    PRIMARY KEY (attribute_id, guild_id)
+);
+
+addOrUpdateAttribute:
+INSERT OR REPLACE INTO GenericAttributeStorage
+    (attribute_id, guild_id, type, data) VALUES
+    (?, ?, ?, ?);
+
+updateAttributeValue:
+INSERT OR REPLACE INTO GenericAttributeStorage
+    (attribute_id, guild_id, data) VALUES
+    (?, ?, ?);
+
+updateAttribute:
+UPDATE GenericAttributeStorage SET
+    data = ? WHERE
+    (attribute_id = ? AND guild_id = ?);
+
+deleteAttribute:
+DELETE FROM GenericAttributeStorage
+    WHERE attribute_id = ? AND guild_id = ?;
+
+getAttribute:
+SELECT type, data FROM GenericAttributeStorage
+    WHERE attribute_id = ? AND guild_id = ?;
+
+getAllGuildAttributes:
+SELECT attribute_id, type, data FROM GenericAttributeStorage
+    WHERE guild_id = ?;

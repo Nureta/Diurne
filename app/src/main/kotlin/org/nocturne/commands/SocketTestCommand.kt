@@ -1,6 +1,7 @@
 package org.nocturne.commands
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import okhttp3.internal.wait
@@ -21,7 +22,8 @@ object SocketTestCommand {
         CommandManager.updateCommandMap(
             MyCommand(
                 COMMAND_NAME, Commands.slash(COMMAND_NAME, "Test socket echo")
-                    .addOption(OptionType.STRING, "msg", "What to echo"), null
+                    .addOption(OptionType.STRING, "msg", "What to echo")
+                    .setDefaultPermissions(DefaultMemberPermissions.ENABLED), null
             )
         )
         registerToGlobalListeners()
@@ -34,21 +36,20 @@ object SocketTestCommand {
     private fun onSlashCommand(event: SlashCommandInteractionEvent) {
         val sender = event.member?.user?.id ?: return
         if (!adminUsers.contains(sender)) return
-        val echoOpt = event.getOption("msg") ?: return
+        val echoOpt = event.getOption("msg")?.asString ?: "test"
         if (!WebServer.hasSocketConnection()) {
             event.reply("No Socket Connection").setEphemeral(true).queue()
             return
         }
-        event.deferReply().queue()
         var ping = System.currentTimeMillis()
-        val result = ComputeJobManager.requestEcho(echoOpt.asString).waitBlocking(5000)
+        val result = ComputeJobManager.requestEcho(echoOpt).waitBlocking(5000)
         ping = System.currentTimeMillis() - ping
         if (result == null) {
-            event.hook.sendMessage("Client failed to reply").setEphemeral(true).queue()
+            event.reply("Client failed to reply").setEphemeral(true).queue()
             return
         }
         val pingMsg = "Ping: $ping\nResult: ${result["result"]}"
-        event.hook.sendMessage(pingMsg).setEphemeral(true).queue()
+        event.reply(pingMsg).setEphemeral(true).queue()
         logger.info("${event.member?.user?.name ?: "Unknown User"}: ${pingMsg}\n")
     }
 }

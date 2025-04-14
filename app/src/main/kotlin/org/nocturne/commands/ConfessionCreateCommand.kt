@@ -1,36 +1,42 @@
 package org.nocturne.commands
 
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import org.nocturne.database.DataBaseManager
+import org.nocturne.database.GuildAttributeManager
 import org.nocturne.listeners.GlobalListeners
 import org.nocturne.webserver.ComputeJobManager
 import org.nocturne.webserver.WebServer
+import java.awt.Color
 
 object ConfessionCreateCommand {
     val COMMAND_NAME = "confession"
     private var hasInit = false
-
+    val CONFESSION_CHANNEL_ATTRIBUTE = "channel_confession"
     val CONFESSION_MODAL_ID = "confession_modal"
     val CONFESSION_MODAL_TEXT_ID = "confession_modal_text"
     val CONFESSION_BUTTON_NEW = "confession_btn_new"
-
-    var confessionChannel = 1326855844561682452L
 
     fun init() {
         if (hasInit) return
         hasInit = true
         CommandManager.updateCommandMap(
-            MyCommand(COMMAND_NAME, Commands.slash(COMMAND_NAME,"Send a anonymous confession"), null)
+            MyCommand(COMMAND_NAME,
+                Commands.slash(COMMAND_NAME,"Send a anonymous confession")
+                    .setDefaultPermissions(DefaultMemberPermissions.ENABLED), null)
         )
         registerToGlobalListeners()
+        GuildAttributeManager.addDefaultGuildAttribute(CONFESSION_CHANNEL_ATTRIBUTE, GuildAttributeManager.CHANNEL_TYPE)
     }
 
     private fun registerToGlobalListeners() {
@@ -48,31 +54,32 @@ object ConfessionCreateCommand {
      */
     private fun onConfessionModalInteraction(event: ModalInteractionEvent) {
         var confession = event.getValue(CONFESSION_MODAL_TEXT_ID)?.asString ?: return
+        val confessionChannel = this.getConfessionChannel(event.guild!!.idLong)
 
-
-
-        // event.reply("Confession processed!").setEphemeral(true).queue()
-
+        event.reply("Processing...").setEphemeral(true).queue();
         // Try getting a toxicity reading
-        val toxic = checkToxicity(confession)
+        var toxic: String? = null
+        if (WebServer.hasSocketConnection()) {
+            toxic = checkToxicity(confession)
+        }
         if (!toxic.isNullOrEmpty()) {
             confession += "\n${toxic}"
         }
         val confessionEmbed = EmbedBuilder()
             .setTitle("Confession")
+            .setColor(Color.blue)
             .setDescription(confession)
             .build()
 
         event.guild!!.getTextChannelById(confessionChannel)!!.sendMessageEmbeds(confessionEmbed)
             .setActionRow(
-                Button.primary(CONFESSION_BUTTON_NEW, "Submit a new confession!")
+                Button.primary(CONFESSION_BUTTON_NEW, "Submit a confession!")
             ).queue()
     }
 
 
     private fun checkToxicity(confession: String): String? {
         if (!WebServer.hasSocketConnection()) return null
-
         val toxicity = ComputeJobManager.requestToxicCheck(confession).waitBlocking(5000)
         if (toxicity.isNullOrEmpty()) return null
         val neutral = toxicity["neutral"]
@@ -101,5 +108,17 @@ object ConfessionCreateCommand {
             .addComponents(ActionRow.of(confessionInput))
             .build()
         return confessionModal
+    }
+
+    /**
+     * @return  0 -> No Channel. Success -> channelID
+     */
+    private fun getConfessionChannel(guildId: Long): Long {
+        val confessionChannel = DataBaseManager.genericAttributes
+            .getAttribute(CONFESSION_CHANNEL_ATTRIBUTE, guildId).executeAsOneOrNull()
+        if (confessionChannel == null || confessionChannel.data_.isNullOrEmpty()) {
+            return 0
+        }
+        return confessionChannel.data_.toLong()
     }
 }
