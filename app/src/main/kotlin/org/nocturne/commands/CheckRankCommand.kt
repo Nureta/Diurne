@@ -38,63 +38,47 @@ object CheckRankCommand {
 
     private fun onSlashCommand(event: SlashCommandInteractionEvent) {
         val sortedUsers = USER_PROFILE.selectUserSortedByLevelDesc().executeAsList()
-        val userID = event.user.idLong
-        var user: UserProfile
+        var userProfile: UserProfile?
         val userOpt = event.getOption("user")?.asMember
 
+        val userID: Long
         if (userOpt != null) {
-            user = USER_PROFILE.selectUserByUserId(userOpt.idLong).executeAsOneOrNull()!!
-            var userRankEmbed: MessageEmbed
-            if (event.guild!!.getMemberById(userID)!!.isBoosting) {
-
-                userRankEmbed = EmbedBuilder()
-                    .setColor(Color(115, 138, 255))
-                    .setAuthor(event.user.name,null,event.user.effectiveAvatarUrl)
-                    .setTitle("Rank: `${sortedUsers.indexOf(user)+1}`")
-                    .setDescription("━━━━⊱⋆⊰━━━━\nLvl. ${user.current_level}\n-# ${user.experience}/${LevelingManager.nextLevelReq((user.current_level+1))} [+50% booster Bonus]\n<:Lunaris:1352820067087155232:> **Lunaris** ${user.lunaris}\n━━━━⊱⋆⊰━━━━")
-                    .build()
-            } else {
-                userRankEmbed = EmbedBuilder()
-                    .setColor(Color(115, 138, 255))
-                    .setAuthor(event.user.name, null, event.user.effectiveAvatarUrl)
-                    .setTitle("Rank: `${sortedUsers.indexOf(user) + 1}`")
-                    .setDescription(
-                        "━━━━⊱⋆⊰━━━━\nLvl. ${user.current_level}\n-# ${user.experience}/${
-                            LevelingManager.nextLevelReq(
-                                (user.current_level + 1)
-                            )
-                        } \n<:Lunaris:1352820067087155232:> **Lunaris** ${user.lunaris}\n━━━━⊱⋆⊰━━━━"
-                    )
-                    .build()
-            }
-            event.replyEmbeds(userRankEmbed).queue()
-            return
-        }
-
-       user = USER_PROFILE.selectUserByUserId(userID).executeAsOneOrNull()?: return
-        var userRankEmbed: MessageEmbed
-        if (event.guild!!.getMemberById(userID)!!.isBoosting) {
-
-            userRankEmbed = EmbedBuilder()
-                .setColor(Color(115, 138, 255))
-                .setAuthor(event.user.name,null,event.user.effectiveAvatarUrl)
-                .setTitle("Rank: `${sortedUsers.indexOf(user)+1}`")
-                .setDescription("━━━━⊱⋆⊰━━━━\nLvl. ${user.current_level}\n-# ${user.experience}/${LevelingManager.nextLevelReq((user.current_level+1))} [+50% booster Bonus]\n<:Lunaris:1352820067087155232:> **Lunaris** ${user.lunaris}\n━━━━⊱⋆⊰━━━━")
-                .build()
+            userID = userOpt.idLong
         } else {
-            userRankEmbed = EmbedBuilder()
-                .setColor(Color(115, 138, 255))
-                .setAuthor(event.user.name, null, event.user.effectiveAvatarUrl)
-                .setTitle("Rank: `${sortedUsers.indexOf(user) + 1}`")
-                .setDescription(
-                    "━━━━⊱⋆⊰━━━━\nLvl. ${user.current_level}\n-# ${user.experience}/${
-                        LevelingManager.nextLevelReq(
-                            (user.current_level + 1)
-                        )
-                    } \n<:Lunaris:1352820067087155232:> **Lunaris** ${user.lunaris}\n━━━━⊱⋆⊰━━━━"
-                )
-                .build()
+            userID = event.user.idLong
         }
+        userProfile = USER_PROFILE.selectUserByUserId(userID).executeAsOneOrNull()
+
+        // Init user if null
+        if (userProfile == null) {
+            USER_PROFILE.insertUser(userID, 0, 0, 0, 1.0, 0)
+            userProfile = USER_PROFILE.selectUserByUserId(userID).executeAsOneOrNull()!!
+        }
+
+        // Retrieve user member object
+        var userMember = event.guild?.getMemberById(userProfile.user_id)
+        if (userMember == null) {
+            userMember = event.guild?.retrieveMemberById(userProfile.user_id)?.complete()
+            if (userMember == null){
+                event.reply("User not found").setEphemeral(true).queue()
+                return
+            }
+        }
+        // Create Embed
+        var userRankEmbed: MessageEmbed = EmbedBuilder()
+            .setColor(Color(115, 138, 255))
+            .setAuthor(userMember.user.name, null, userMember.user.effectiveAvatarUrl)
+            .setTitle("Rank: `${sortedUsers.indexOf(userProfile) + 1}`")
+            .setDescription(
+                "━━━━⊱⋆⊰━━━━\nLvl. ${userProfile.current_level}\n-# ${userProfile.experience}/${
+                    LevelingManager.nextLevelReq(
+                        (userProfile.current_level + 1))}" +
+                        if (userMember.isBoosting) " [+50% Booster Bonus]" else "" +
+                    "\n<:Lunaris:1352820067087155232:> **Lunaris** ${userProfile.lunaris}" +
+                "\n━━━━⊱⋆⊰━━━━"
+            )
+            .build()
         event.replyEmbeds(userRankEmbed).queue()
+        return
     }
 }
