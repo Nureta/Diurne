@@ -46,7 +46,7 @@ object OnMessageReactedListener  {
             .setAuthor("Reaction Milestone ")
             .setThumbnail(retrievedMessage.author.effectiveAvatarUrl)
             .setDescription("## ${retrievedMessage.contentRaw}")
-            .setFooter("—${retrievedMessage.author.name}")
+            .setFooter("— ${retrievedMessage.author.name}")
             .setUrl(event.jumpUrl)
             .build()
 

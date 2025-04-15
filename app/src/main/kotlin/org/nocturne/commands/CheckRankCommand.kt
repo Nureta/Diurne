@@ -2,6 +2,7 @@ package org.nocturne.commands
 
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.EmbedType
+import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -43,23 +44,57 @@ object CheckRankCommand {
 
         if (userOpt != null) {
             user = USER_PROFILE.selectUserByUserId(userOpt.idLong).executeAsOneOrNull()!!
-            val userRankEmbed = EmbedBuilder()
-                .setColor(Color(115, 138, 255))
-                .setAuthor(event.user.name,null,userOpt.effectiveAvatarUrl)
-                .setTitle("Rank: `${sortedUsers.indexOf(user)+1}`")
-                .setDescription("## Lvl. ${user.current_level}\n-# ${user.experience}/${LevelingManager.nextLevelReq((user.current_level+1))}")
-                .build()
+            var userRankEmbed: MessageEmbed
+            if (event.guild!!.getMemberById(userID)!!.isBoosting) {
+
+                userRankEmbed = EmbedBuilder()
+                    .setColor(Color(115, 138, 255))
+                    .setAuthor(event.user.name,null,event.user.effectiveAvatarUrl)
+                    .setTitle("Rank: `${sortedUsers.indexOf(user)+1}`")
+                    .setDescription("━━━━⊱⋆⊰━━━━\nLvl. ${user.current_level}\n-# ${user.experience}/${LevelingManager.nextLevelReq((user.current_level+1))} [+50% booster Bonus]\n<:Lunaris:1352820067087155232:> **Lunaris** ${user.lunaris}\n━━━━⊱⋆⊰━━━━")
+                    .build()
+            } else {
+                userRankEmbed = EmbedBuilder()
+                    .setColor(Color(115, 138, 255))
+                    .setAuthor(event.user.name, null, event.user.effectiveAvatarUrl)
+                    .setTitle("Rank: `${sortedUsers.indexOf(user) + 1}`")
+                    .setDescription(
+                        "━━━━⊱⋆⊰━━━━\nLvl. ${user.current_level}\n-# ${user.experience}/${
+                            LevelingManager.nextLevelReq(
+                                (user.current_level + 1)
+                            )
+                        } \n<:Lunaris:1352820067087155232:> **Lunaris** ${user.lunaris}\n━━━━⊱⋆⊰━━━━"
+                    )
+                    .build()
+            }
             event.replyEmbeds(userRankEmbed).queue()
             return
         }
 
        user = USER_PROFILE.selectUserByUserId(userID).executeAsOneOrNull()?: return
-        val userRankEmbed = EmbedBuilder()
-            .setColor(Color(115, 138, 255))
-            .setAuthor(event.user.name,null,event.member?.user?.effectiveAvatarUrl)
-            .setTitle("${event.user.name} Rank: `${sortedUsers.indexOf(user)+1}`")
-            .setDescription("╔═*.·:·.✧ ✦ ✧.·:·.*═╗ \n### Lvl. ${user.current_level}\n-# ${user.experience}/${LevelingManager.nextLevelReq((user.current_level+1))}\n╚═*.·:·.✧ ✦ ✧.·:·.*═╝ ")
-            .build()
+        var userRankEmbed: MessageEmbed
+        if (event.guild!!.getMemberById(userID)!!.isBoosting) {
+
+            userRankEmbed = EmbedBuilder()
+                .setColor(Color(115, 138, 255))
+                .setAuthor(event.user.name,null,event.user.effectiveAvatarUrl)
+                .setTitle("Rank: `${sortedUsers.indexOf(user)+1}`")
+                .setDescription("━━━━⊱⋆⊰━━━━\nLvl. ${user.current_level}\n-# ${user.experience}/${LevelingManager.nextLevelReq((user.current_level+1))} [+50% booster Bonus]\n<:Lunaris:1352820067087155232:> **Lunaris** ${user.lunaris}\n━━━━⊱⋆⊰━━━━")
+                .build()
+        } else {
+            userRankEmbed = EmbedBuilder()
+                .setColor(Color(115, 138, 255))
+                .setAuthor(event.user.name, null, event.user.effectiveAvatarUrl)
+                .setTitle("Rank: `${sortedUsers.indexOf(user) + 1}`")
+                .setDescription(
+                    "━━━━⊱⋆⊰━━━━\nLvl. ${user.current_level}\n-# ${user.experience}/${
+                        LevelingManager.nextLevelReq(
+                            (user.current_level + 1)
+                        )
+                    } \n<:Lunaris:1352820067087155232:> **Lunaris** ${user.lunaris}\n━━━━⊱⋆⊰━━━━"
+                )
+                .build()
+        }
         event.replyEmbeds(userRankEmbed).queue()
     }
 }

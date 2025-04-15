@@ -11,11 +11,6 @@ import org.nocturne.logic.leveling.LevelingManager.giveExperience
 import kotlin.concurrent.timer
 
 
-
-
-
-
-
 object LevelingService {
     var hasInit = false
     val EVENT_NAME = "LEVELING_SERVICE"
