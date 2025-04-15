@@ -65,18 +65,29 @@ object CheckRankCommand {
             }
         }
         // Create Embed
+        var lunarisStr = ":coin:"
+        if (event.guild != null && event.guild!!.idLong == 1325079345521365133) {
+            lunarisStr = "<:Lunaris:1352820067087155232>"
+        }
+        var rankDescription = "━━━━⊱⋆⊰━━━━\n" +
+                "Lvl. ${userProfile.current_level}\n-# ${userProfile.experience}/${
+            LevelingManager.nextLevelReq(
+                (userProfile.current_level + 1))}"
+        if (userMember.isBoosting) {
+            rankDescription += " [+50% Booster Bonus]"
+        }
+        rankDescription += "\n $lunarisStr **Lunaris** ${userProfile.lunaris}\n" +
+                "━━━━⊱⋆⊰━━━━"
         var userRankEmbed: MessageEmbed = EmbedBuilder()
             .setColor(Color(115, 138, 255))
             .setAuthor(userMember.user.name, null, userMember.user.effectiveAvatarUrl)
             .setTitle("Rank: `${sortedUsers.indexOf(userProfile) + 1}`")
-            .setDescription(
-                "━━━━⊱⋆⊰━━━━\nLvl. ${userProfile.current_level}\n-# ${userProfile.experience}/${
-                    LevelingManager.nextLevelReq(
-                        (userProfile.current_level + 1))}" +
-                        if (userMember.isBoosting) " [+50% Booster Bonus]" else "" +
-                    "\n<:Lunaris:1352820067087155232:> **Lunaris** ${userProfile.lunaris}" +
-                "\n━━━━⊱⋆⊰━━━━"
-            )
+            .setDescription("━━━━━⋆━━━━━⊱⋆⊰━━━━━⋆━━━━━")
+            .addField("LVL: `${userProfile.current_level}`", "", true)
+            .addField("EXP: `${userProfile.experience}/${LevelingManager.nextLevelReq((userProfile.current_level + 1))}`",
+                "", true)
+            .addField("Lunaris: `${userProfile.lunaris}` $lunarisStr",
+                "", true)
             .build()
         event.replyEmbeds(userRankEmbed).queue()
         return
