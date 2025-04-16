@@ -110,7 +110,7 @@ object HelperReportCommand {
             .addAnswer("Yes")
             .addAnswer("Neutral")
             .addAnswer("No")
-            .setDuration(Duration.ofMinutes(60L))
+            .setDuration(Duration.ofHours(24L))
             .build()
 
         try {

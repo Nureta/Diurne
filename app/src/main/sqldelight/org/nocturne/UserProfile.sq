@@ -18,6 +18,7 @@ WHERE user_id = ?;
 
 selectUserSortedByLevelDesc:
 SELECT * FROM UserProfile ORDER BY
+current_level DESC,
 experience DESC;
 
 updateCooldown:
