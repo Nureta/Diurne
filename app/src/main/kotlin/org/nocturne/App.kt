@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory
 class App(val mode: String) {
     companion object {
         var logger: Logger = LoggerFactory.getLogger(App::class.java)
+        var helperReportKey = ""
     }
 
     fun start() {
@@ -34,6 +35,8 @@ class App(val mode: String) {
             logger.info("Starting in DEV")
             token = dotenv.get("DEV_DISCORD_TOKEN")
         }
+
+        helperReportKey = dotenv.get("HELPER_REPORT_KEY")
         WebServer.start()
 
         val intents = ArrayList<GatewayIntent>()

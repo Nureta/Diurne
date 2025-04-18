@@ -31,20 +31,26 @@ object CoinFlipCommand {
 
     private fun onSlashCommand(event: SlashCommandInteractionEvent) {
         val betOpt = event.getOption("bet")?: return
-
         val user = USER_PROFILE.selectUserByUserId(event.user.idLong).executeAsOneOrNull()
-        if(betOpt.asLong > user!!.lunaris) {
-            event.reply("You do not have enough <:Lunaris:1352820067087155232:> **Lunaris** for that").queue()
+        val betAmt = betOpt.asLong
+
+
+        if(betAmt > user!!.lunaris) {
+            event.reply("You do not have enough :Lunaris: **Lunaris** for that").queue()
+            return
+        }
+        if (betAmt <= 0) {
+            event.reply("You tried.... Use a positive non-zero bet.").queue()
             return
         }
         if (Random.nextBoolean()) {
             val amount = betOpt
-            event.reply("You won <:Lunaris:1352820067087155232:> ${amount.asInt} **Lunaris**").queue()
+            event.reply("You won :Lunaris: ${amount.asInt} **Lunaris**").queue()
                 USER_PROFILE.updateLunaris(amount.asLong+user.lunaris,event.user.idLong)
                 return
         }
         val amount = betOpt
-        event.reply("You lost <:Lunaris:1352820067087155232:> ${amount.asInt} **Lunaris**").queue()
+        event.reply("You lost :Lunaris: ${amount.asInt} **Lunaris**").queue()
         USER_PROFILE.updateLunaris(user.lunaris-amount.asLong,event.user.idLong)
 
 
